@@ -95,7 +95,6 @@ export default function ServiceCard({ service }) {
         <h3 className="font-semibold text-white text-sm truncate">{service.name}</h3>
         <p style={{ color: '#888' }} className="text-xs truncate mt-0.5">{service.description}</p>
       </div>
-      <NeonArrow />
     </div>
   );
 }
