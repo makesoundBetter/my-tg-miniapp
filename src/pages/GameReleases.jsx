@@ -10,40 +10,43 @@ function getDaysLeft(dateStr) {
   const release = new Date(dateStr);
   const diff = Math.ceil((release - today) / (1000 * 60 * 60 * 24));
   if (diff < 0) return 'Вышла';
-  if (diff === 0) return 'Сегодня!';
-  return `через ${diff} дн.`;
+  if (diff === 0) return 'Сегодня';
+  return `${diff} дн.`;
 }
 
 export default function GameReleases() {
   const sorted = [...games].sort((a, b) => new Date(a.releaseDate) - new Date(b.releaseDate));
 
   return (
-    <div className="p-4 space-y-4">
-      <h1 className="text-xl font-bold text-gray-900 pt-2">Релизы игр</h1>
+    <div>
+      <div className="p-4 pt-6 pb-4">
+        <p style={{ color: '#888', letterSpacing: '0.15em' }} className="text-xs uppercase mb-1">Календарь</p>
+        <h1 className="text-2xl font-bold text-white">Релизы игр</h1>
+      </div>
 
-      <div className="space-y-3">
+      <div className="space-y-px">
         {sorted.map((game) => (
-          <div key={game.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-            <div className="flex items-center gap-3">
-              <div className="text-3xl w-12 h-12 flex items-center justify-center bg-gray-50 rounded-xl">
-                {game.emoji}
+          <div key={game.id} style={{ background: '#1A1A1A', borderBottom: '1px solid #2A2A2A' }}
+            className="p-4 flex items-center gap-4">
+            <div style={{ background: '#2A2A2A' }}
+              className="w-11 h-11 flex items-center justify-center text-xl shrink-0">
+              {game.emoji}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-0.5">
+                <h3 className="font-semibold text-white text-sm truncate">{game.name}</h3>
+                {!game.isConfirmed && (
+                  <span style={{ border: '1px solid #F5E642', color: '#F5E642' }}
+                    className="text-[9px] px-1.5 py-0.5 shrink-0 uppercase tracking-wider">
+                    Слух
+                  </span>
+                )}
               </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-gray-900">{game.name}</h3>
-                  {!game.isConfirmed && (
-                    <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full">
-                      Слух
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm text-gray-500">{game.platform}</p>
-                <p className="text-sm text-gray-400">{game.genre}</p>
-              </div>
-              <div className="text-right shrink-0">
-                <div className="font-bold text-blue-500 text-sm">{getDaysLeft(game.releaseDate)}</div>
-                <div className="text-xs text-gray-400">{formatDate(game.releaseDate)}</div>
-              </div>
+              <p style={{ color: '#888' }} className="text-xs">{game.platform}</p>
+            </div>
+            <div className="text-right shrink-0">
+              <div style={{ color: '#F5E642' }} className="text-sm font-bold">{getDaysLeft(game.releaseDate)}</div>
+              <div style={{ color: '#888' }} className="text-xs">{formatDate(game.releaseDate)}</div>
             </div>
           </div>
         ))}

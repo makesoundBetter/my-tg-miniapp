@@ -8,7 +8,7 @@ export default function ServiceDetail() {
 
   if (!service) {
     return (
-      <div className="p-4 text-center text-gray-500 pt-20">
+      <div className="p-4 text-center pt-20" style={{ color: '#888' }}>
         Услуга не найдена
       </div>
     );
@@ -20,31 +20,45 @@ export default function ServiceDetail() {
   };
 
   return (
-    <div className="p-4 space-y-4">
-      <button
-        onClick={() => navigate(-1)}
-        className="text-blue-500 flex items-center gap-1 pt-2"
-      >
-        ‹ Назад
-      </button>
+    <div className="min-h-screen" style={{ background: '#0D0D0D' }}>
+      <div className="p-4 pt-6">
+        <button
+          onClick={() => navigate(-1)}
+          style={{ color: '#F5E642' }}
+          className="flex items-center gap-2 text-sm mb-8"
+        >
+          ← Назад
+        </button>
 
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
-        <div className="text-6xl mb-4">{service.emoji}</div>
-        <h1 className="text-2xl font-bold text-gray-900">{service.name}</h1>
-        <div className="text-lg text-blue-500 font-medium mt-2">Цена по запросу</div>
+        <div className="mb-8">
+          <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A' }}
+            className="w-20 h-20 flex items-center justify-center text-4xl mb-6">
+            {service.emoji}
+          </div>
+          <p style={{ color: '#888', letterSpacing: '0.15em' }} className="text-xs uppercase mb-2">Сервис</p>
+          <h1 className="text-3xl font-bold text-white">{service.name}</h1>
+        </div>
+
+        <div style={{ borderTop: '1px solid #2A2A2A', borderBottom: '1px solid #2A2A2A' }}
+          className="py-6 mb-8">
+          <p style={{ color: '#888' }} className="text-sm leading-relaxed">{service.description}</p>
+        </div>
+
+        <div className="mb-4">
+          <p style={{ color: '#888' }} className="text-xs mb-1">Стоимость</p>
+          <p style={{ color: '#F5E642' }} className="text-lg font-semibold">По запросу</p>
+        </div>
       </div>
 
-      <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-        <h2 className="font-semibold text-gray-900 mb-2">Описание</h2>
-        <p className="text-gray-600">{service.description}</p>
+      <div className="fixed bottom-[70px] left-0 right-0 p-4">
+        <button
+          onClick={handleOrder}
+          style={{ background: '#F5E642', color: '#0D0D0D' }}
+          className="w-full py-4 font-bold text-sm tracking-widest uppercase active:scale-95 transition-transform"
+        >
+          Написать для заказа →
+        </button>
       </div>
-
-      <button
-        onClick={handleOrder}
-        className="w-full bg-blue-500 text-white rounded-2xl py-4 font-semibold text-lg active:scale-95 transition-transform"
-      >
-        Написать для заказа
-      </button>
     </div>
   );
 }

@@ -2,46 +2,51 @@ import { useNavigate } from 'react-router-dom';
 import { categories } from '../data/services';
 
 const quickLinks = [
-  { to: '/catalog', icon: '📦', label: 'Все услуги' },
-  { to: '/search', icon: '🔍', label: 'Поиск' },
-  { to: '/news', icon: '📰', label: 'Новости' },
-  { to: '/games', icon: '🎮', label: 'Релизы игр' },
+  { to: '/catalog', icon: '◈', label: 'Услуги' },
+  { to: '/search', icon: '⌕', label: 'Поиск' },
+  { to: '/news', icon: '◉', label: 'Новости' },
+  { to: '/games', icon: '◎', label: 'Релизы' },
 ];
 
 export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className="p-4 space-y-6">
-      <div className="pt-4">
-        <h1 className="text-2xl font-bold text-gray-900">Привет! 👋</h1>
-        <p className="text-gray-500 mt-1">Выбери нужный сервис или услугу</p>
+    <div className="p-4 space-y-8">
+      <div className="pt-6">
+        <p style={{ color: '#888', letterSpacing: '0.15em' }} className="text-xs uppercase mb-2">Добро пожаловать</p>
+        <h1 className="text-3xl font-bold text-white leading-tight">
+          Найди нужный<br />
+          <span style={{ color: '#F5E642' }}>сервис</span>
+        </h1>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2">
         {quickLinks.map((link) => (
           <button
             key={link.to}
             onClick={() => navigate(link.to)}
-            className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col items-center gap-2 active:scale-95 transition-transform"
+            style={{ background: '#1A1A1A', border: '1px solid #2A2A2A' }}
+            className="p-4 flex flex-col items-start gap-3 active:scale-95 transition-transform"
           >
-            <span className="text-3xl">{link.icon}</span>
-            <span className="text-sm font-medium text-gray-700">{link.label}</span>
+            <span style={{ color: '#F5E642' }} className="text-2xl">{link.icon}</span>
+            <span className="text-sm font-medium text-white">{link.label}</span>
           </button>
         ))}
       </div>
 
       <div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-3">Категории</h2>
-        <div className="space-y-2">
-          {categories.filter(c => c.id !== 'all').map((cat) => (
+        <p style={{ color: '#888', letterSpacing: '0.15em' }} className="text-xs uppercase mb-3">Категории</p>
+        <div className="space-y-px">
+          {categories.filter(c => c.id !== 'all').map((cat, i) => (
             <button
               key={cat.id}
               onClick={() => navigate(`/catalog?category=${cat.id}`)}
-              className="w-full bg-white rounded-xl p-3 shadow-sm border border-gray-100 flex items-center justify-between active:scale-95 transition-transform"
+              style={{ background: '#1A1A1A', borderBottom: '1px solid #2A2A2A' }}
+              className="w-full p-4 flex items-center justify-between active:scale-95 transition-transform"
             >
-              <span className="font-medium text-gray-800">{cat.name}</span>
-              <span className="text-gray-400">›</span>
+              <span className="text-sm font-medium text-white">{cat.name}</span>
+              <span style={{ color: '#F5E642' }}>→</span>
             </button>
           ))}
         </div>

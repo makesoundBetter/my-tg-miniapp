@@ -6,60 +6,61 @@ import ServiceCard from '../components/ServiceCard';
 
 export default function Search() {
   const [query, setQuery] = useState('');
-
   const q = query.toLowerCase().trim();
 
-  const filteredServices = q
-    ? services.filter(s =>
-        s.name.toLowerCase().includes(q) ||
-        s.description.toLowerCase().includes(q)
-      )
-    : [];
+  const filteredServices = q ? services.filter(s =>
+    s.name.toLowerCase().includes(q) || s.description.toLowerCase().includes(q)
+  ) : [];
 
-  const filteredNews = q
-    ? news.filter(n =>
-        n.title.toLowerCase().includes(q) ||
-        n.description.toLowerCase().includes(q)
-      )
-    : [];
+  const filteredNews = q ? news.filter(n =>
+    n.title.toLowerCase().includes(q) || n.description.toLowerCase().includes(q)
+  ) : [];
 
   return (
-    <div className="p-4 space-y-4">
-      <h1 className="text-xl font-bold text-gray-900 pt-2">Поиск</h1>
-
-      <SearchBar value={query} onChange={setQuery} placeholder="Поиск услуг и новостей..." />
+    <div>
+      <div className="p-4 pt-6 pb-4">
+        <p style={{ color: '#888', letterSpacing: '0.15em' }} className="text-xs uppercase mb-1">Поиск</p>
+        <h1 className="text-2xl font-bold text-white mb-4">Найти</h1>
+        <SearchBar value={query} onChange={setQuery} placeholder="Введи название сервиса..." />
+      </div>
 
       {!q && (
-        <p className="text-center text-gray-400 pt-10">Введи запрос для поиска</p>
+        <p style={{ color: '#888' }} className="text-center text-sm pt-16">Начни вводить запрос</p>
       )}
 
       {q && filteredServices.length === 0 && filteredNews.length === 0 && (
-        <p className="text-center text-gray-400 pt-10">Ничего не найдено</p>
+        <p style={{ color: '#888' }} className="text-center text-sm pt-16">Ничего не найдено</p>
       )}
 
       {filteredServices.length > 0 && (
         <div>
-          <h2 className="font-semibold text-gray-700 mb-2">Услуги</h2>
-          <div className="space-y-3">
-            {filteredServices.map(s => (
-              <ServiceCard key={s.id} service={s} />
-            ))}
+          <p style={{ color: '#888', letterSpacing: '0.15em', borderBottom: '1px solid #2A2A2A' }}
+            className="text-xs uppercase px-4 py-2">
+            Услуги
+          </p>
+          <div className="space-y-px">
+            {filteredServices.map(s => <ServiceCard key={s.id} service={s} />)}
           </div>
         </div>
       )}
 
       {filteredNews.length > 0 && (
-        <div>
-          <h2 className="font-semibold text-gray-700 mb-2">Новости</h2>
-          <div className="space-y-3">
+        <div className="mt-4">
+          <p style={{ color: '#888', letterSpacing: '0.15em', borderBottom: '1px solid #2A2A2A' }}
+            className="text-xs uppercase px-4 py-2">
+            Новости
+          </p>
+          <div className="space-y-px">
             {filteredNews.map(n => (
-              <div key={n.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-                <div className="flex items-start gap-3">
-                  <span className="text-2xl">{n.emoji}</span>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{n.title}</h3>
-                    <p className="text-sm text-gray-500 mt-1">{n.description}</p>
-                  </div>
+              <div key={n.id} style={{ background: '#1A1A1A', borderBottom: '1px solid #2A2A2A' }}
+                className="p-4 flex gap-4">
+                <div style={{ background: '#2A2A2A' }}
+                  className="w-10 h-10 flex items-center justify-center text-xl shrink-0">
+                  {n.emoji}
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white text-sm">{n.title}</h3>
+                  <p style={{ color: '#888' }} className="text-xs mt-1">{n.description}</p>
                 </div>
               </div>
             ))}

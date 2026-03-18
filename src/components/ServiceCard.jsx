@@ -6,16 +6,18 @@ export default function ServiceCard({ service }) {
   return (
     <div
       onClick={() => navigate(`/service/${service.id}`)}
-      className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3 cursor-pointer active:scale-95 transition-transform"
+      style={{ background: '#1A1A1A', border: '1px solid #2A2A2A' }}
+      className="flex items-center gap-4 p-4 cursor-pointer active:scale-95 transition-transform"
     >
-      <div className="text-3xl w-12 h-12 flex items-center justify-center bg-gray-50 rounded-xl shrink-0">
+      <div style={{ background: '#2A2A2A' }}
+        className="w-11 h-11 flex items-center justify-center text-xl shrink-0">
         {service.emoji}
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-gray-900 truncate">{service.name}</h3>
-        <p className="text-sm text-gray-500 truncate">{service.description}</p>
+        <h3 className="font-semibold text-white text-sm truncate">{service.name}</h3>
+        <p style={{ color: '#888' }} className="text-xs truncate mt-0.5">{service.description}</p>
       </div>
-      <span className="text-gray-400 shrink-0">›</span>
+      <span style={{ color: '#F5E642' }} className="text-lg shrink-0">→</span>
     </div>
   );
 }

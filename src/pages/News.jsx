@@ -2,25 +2,33 @@ import { news } from '../data/news';
 
 export default function News() {
   return (
-    <div className="p-4 space-y-4">
-      <h1 className="text-xl font-bold text-gray-900 pt-2">Новости и новинки</h1>
+    <div>
+      <div className="p-4 pt-6 pb-4">
+        <p style={{ color: '#888', letterSpacing: '0.15em' }} className="text-xs uppercase mb-1">Лента</p>
+        <h1 className="text-2xl font-bold text-white">Новости</h1>
+      </div>
 
-      <div className="space-y-3">
+      <div className="space-y-px">
         {news.map((item) => (
-          <div key={item.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-            <div className="flex items-start gap-3">
-              <span className="text-3xl">{item.emoji}</span>
+          <div key={item.id} style={{ background: '#1A1A1A', borderBottom: '1px solid #2A2A2A' }}
+            className="p-4">
+            <div className="flex items-start gap-4">
+              <div style={{ background: '#2A2A2A' }}
+                className="w-10 h-10 flex items-center justify-center text-xl shrink-0">
+                {item.emoji}
+              </div>
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-semibold text-gray-900">{item.title}</h3>
+                <div className="flex items-center gap-2 mb-2">
                   {item.isNew && (
-                    <span className="shrink-0 bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
-                      Новое
+                    <span style={{ background: '#F5E642', color: '#0D0D0D' }}
+                      className="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5">
+                      NEW
                     </span>
                   )}
+                  <span style={{ color: '#888' }} className="text-xs">{item.date}</span>
                 </div>
-                <p className="text-sm text-gray-600">{item.description}</p>
-                <p className="text-xs text-gray-400 mt-2">{item.date}</p>
+                <h3 className="font-semibold text-white text-sm mb-1">{item.title}</h3>
+                <p style={{ color: '#888' }} className="text-xs leading-relaxed">{item.description}</p>
               </div>
             </div>
           </div>

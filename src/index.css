@@ -8,11 +8,21 @@
   padding: 0;
 }
 
+:root {
+  --yellow: #F5E642;
+  --black: #0D0D0D;
+  --gray: #1A1A1A;
+  --gray2: #2A2A2A;
+  --text: #FFFFFF;
+  --text-muted: #888888;
+}
+
 body {
-  font-family: system-ui, -apple-system, sans-serif;
-  background: var(--tg-theme-bg-color, #ffffff);
-  color: var(--tg-theme-text-color, #000000);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--black);
+  color: var(--text);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
 #root {

@@ -1,16 +1,17 @@
 import { NavLink } from 'react-router-dom';
 
 const tabs = [
-  { to: '/', icon: '🏠', label: 'Главная' },
-  { to: '/catalog', icon: '📦', label: 'Услуги' },
-  { to: '/search', icon: '🔍', label: 'Поиск' },
-  { to: '/news', icon: '📰', label: 'Новости' },
-  { to: '/games', icon: '🎮', label: 'Релизы' },
+  { to: '/', icon: '⌂', label: 'Главная' },
+  { to: '/catalog', icon: '◈', label: 'Услуги' },
+  { to: '/search', icon: '⌕', label: 'Поиск' },
+  { to: '/news', icon: '◉', label: 'Новости' },
+  { to: '/games', icon: '◎', label: 'Релизы' },
 ];
 
 export default function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
+    <nav style={{ background: '#0D0D0D', borderTop: '1px solid #2A2A2A' }}
+      className="fixed bottom-0 left-0 right-0 z-50">
       <div className="flex">
         {tabs.map((tab) => (
           <NavLink
@@ -18,13 +19,24 @@ export default function BottomNav() {
             to={tab.to}
             end={tab.to === '/'}
             className={({ isActive }) =>
-              `flex-1 flex flex-col items-center py-2 text-xs transition-colors ${
-                isActive ? 'text-blue-500' : 'text-gray-500'
+              `flex-1 flex flex-col items-center py-3 text-xs transition-all ${
+                isActive
+                  ? 'text-yellow-300'
+                  : 'text-gray-600'
               }`
             }
           >
-            <span className="text-xl mb-0.5">{tab.icon}</span>
-            <span>{tab.label}</span>
+            {({ isActive }) => (
+              <>
+                <span className="text-lg mb-0.5">{tab.icon}</span>
+                <span className={`text-[10px] font-medium tracking-wider uppercase ${isActive ? 'text-yellow-300' : 'text-gray-600'}`}>
+                  {tab.label}
+                </span>
+                {isActive && (
+                  <span className="absolute bottom-0 w-6 h-0.5 bg-yellow-300 rounded-full" />
+                )}
+              </>
+            )}
           </NavLink>
         ))}
       </div>

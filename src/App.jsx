@@ -10,7 +10,7 @@ import GameReleases from './pages/GameReleases';
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen" style={{ background: '#0D0D0D' }}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/catalog" element={<Catalog />} />
