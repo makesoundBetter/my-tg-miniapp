@@ -8,7 +8,7 @@ export const categories = [
   { id: 'games', name: 'Игры' },
 ];
 
-const logo = (domain) => `https://logo.clearbit.com/${domain}`;
+const logo = (domain) => `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
 
 export const services = [
   // ИИ сервисы
