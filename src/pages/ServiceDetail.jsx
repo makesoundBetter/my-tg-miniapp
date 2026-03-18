@@ -16,7 +16,7 @@ export default function ServiceDetail() {
 
   const handleOrder = () => {
     const text = encodeURIComponent(`Хочу узнать цену и заказать: ${service.name}`);
-    window.open(`https://t.me/YOUR_USERNAME?text=${text}`, '_blank');
+    window.open(`https://t.me/Torontocake?text=${text}`, '_blank');
   };
 
   return (
