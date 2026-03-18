@@ -1,5 +1,14 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { services } from '../data/services';
+
+function ServiceLogo({ logo, emoji }) {
+  const [failed, setFailed] = useState(false);
+  if (logo && !failed) {
+    return <img src={logo} alt="" onError={() => setFailed(true)} className="w-10 h-10 object-contain" />;
+  }
+  return <span className="text-4xl">{emoji}</span>;
+}
 
 export default function ServiceDetail() {
   const { id } = useParams();
@@ -32,8 +41,8 @@ export default function ServiceDetail() {
 
         <div className="mb-8">
           <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A' }}
-            className="w-20 h-20 flex items-center justify-center text-4xl mb-6">
-            {service.emoji}
+            className="w-20 h-20 flex items-center justify-center mb-6">
+            <ServiceLogo logo={service.logo} emoji={service.emoji} />
           </div>
           <p style={{ color: '#888', letterSpacing: '0.15em' }} className="text-xs uppercase mb-2">Сервис</p>
           <h1 className="text-3xl font-bold text-white">{service.name}</h1>
