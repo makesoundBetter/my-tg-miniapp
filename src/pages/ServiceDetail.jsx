@@ -40,8 +40,7 @@ export default function ServiceDetail() {
         </button>
 
         <div className="mb-8">
-          <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A' }}
-            className="w-20 h-20 flex items-center justify-center mb-6">
+          <div className="w-20 h-20 flex items-center justify-center mb-6">
             <ServiceLogo logo={service.logo} emoji={service.emoji} />
           </div>
           <p style={{ color: '#888', letterSpacing: '0.15em' }} className="text-xs uppercase mb-2">Сервис</p>

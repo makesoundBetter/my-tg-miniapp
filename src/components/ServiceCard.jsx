@@ -26,8 +26,7 @@ export default function ServiceCard({ service }) {
       style={{ background: '#1A1A1A', borderBottom: '1px solid #2A2A2A' }}
       className="flex items-center gap-4 p-4 cursor-pointer active:scale-95 transition-transform"
     >
-      <div style={{ background: '#2A2A2A' }}
-        className="w-11 h-11 flex items-center justify-center shrink-0">
+      <div className="w-11 h-11 flex items-center justify-center shrink-0">
         <ServiceLogo logo={service.logo} emoji={service.emoji} />
       </div>
       <div className="flex-1 min-w-0">
