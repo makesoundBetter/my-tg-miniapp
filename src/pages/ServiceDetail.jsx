@@ -26,14 +26,6 @@ export default function ServiceDetail() {
   }
 
   const handleOrder = () => {
-    // Сохраняем в историю запросов
-    try {
-      const history = JSON.parse(localStorage.getItem('service_history') || '[]');
-      if (!history.find(h => h.id === service.id)) {
-        history.unshift({ id: service.id, date: new Date().toISOString() });
-        localStorage.setItem('service_history', JSON.stringify(history));
-      }
-    } catch {}
     navigate('/order-confirm', {
       state: {
         serviceId: service.id,

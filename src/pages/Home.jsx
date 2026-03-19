@@ -251,9 +251,7 @@ const LINES = [
 
 function Terminal() {
   const [visibleLines, setVisibleLines] = useState([]);
-  const [typedText, setTypedText] = useState('');
   const [lineIndex, setLineIndex] = useState(0);
-  const [done, setDone] = useState(false);
 
   // Show lines one by one
   useEffect(() => {
