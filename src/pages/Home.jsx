@@ -160,12 +160,12 @@ function CyberGrid() {
       ctx.rect(0, vpy, W, H - vpy);
       ctx.clip();
 
-      // ── Вертикальные линии — широкий разброс, обрезаются клипом ──
+      // ── Вертикальные линии — разброс адаптивный под любой экран ──
       const VCOLS = 10;
       for (let i = 0; i <= VCOLS; i++) {
         const t0 = i / VCOLS;
-        // Разброс = 6 высот дороги — всегда заполняет экран на любом устройстве
-        const spread = (H - vpy) * 6;
+        // Берём максимум из ширины и высоты дороги — работает на любом устройстве
+        const spread = Math.max(W, H - vpy) * 4;
         const xBottom = vpx + (t0 - 0.5) * spread * 2;
         const dist = Math.abs(t0 - 0.5) * 2;
         const alpha = 0.07 + dist * 0.18;
