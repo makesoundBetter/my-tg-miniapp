@@ -133,7 +133,8 @@ function CyberGrid() {
     const W = cssW;
     const H = cssH;
     const vpx = W / 2;
-    const vpy = H * 0.42; // горизонт на уровне глаз
+    // Портрет (телефон) — дорога 20%, ландшафт (десктоп) — 58%
+    const vpy = H > W ? H * 0.80 : H * 0.42;
 
     let t = 0;
 
