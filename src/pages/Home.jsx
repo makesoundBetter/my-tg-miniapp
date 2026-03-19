@@ -165,7 +165,7 @@ function CyberGrid() {
       for (let i = 0; i <= VCOLS; i++) {
         const t0 = i / VCOLS;
         // Берём максимум из ширины и высоты дороги — работает на любом устройстве
-        const spread = Math.max(W, H - vpy) * 3.2;
+        const spread = Math.max(W, H - vpy) * 2.56;
         const xBottom = vpx + (t0 - 0.5) * spread * 2;
         const dist = Math.abs(t0 - 0.5) * 2;
         const alpha = 0.07 + dist * 0.18;
