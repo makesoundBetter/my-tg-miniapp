@@ -126,15 +126,26 @@ export default function Catalog() {
       localStorage.setItem('moving_history', JSON.stringify(history));
     } catch {}
 
-    const text = encodeURIComponent(
-      `Перестановка средств\n\n` +
-      `Страна назначения: ${destCountry.name}\n` +
-      `Сумма: ${amount} ${currency}\n` +
-      `Страна отдачи: ${sourceCountry.name}\n` +
-      `Валюта отдачи: ${sourceCurrency}\n` +
-      `Способ передачи: ${transferMethod}`
-    );
-    window.open(`https://t.me/Torontocake?text=${text}`, '_blank');
+    navigate('/order-confirm', {
+      state: {
+        title: 'Перестановка средств',
+        subtitle: `${sourceCountry.name} → ${destCountry.name}`,
+        fields: [
+          { label: 'Страна назначения', value: destCountry.name },
+          { label: 'Сумма перевода',    value: `${amount} ${currency}` },
+          { label: 'Страна отдачи',     value: sourceCountry.name },
+          { label: 'Валюта отдачи',     value: sourceCurrency },
+          { label: 'Способ передачи',   value: transferMethod },
+        ],
+        telegramMsg:
+          `Перестановка средств\n\n` +
+          `Страна назначения: ${destCountry.name}\n` +
+          `Сумма: ${amount} ${currency}\n` +
+          `Страна отдачи: ${sourceCountry.name}\n` +
+          `Валюта отдачи: ${sourceCurrency}\n` +
+          `Способ передачи: ${transferMethod}`,
+      },
+    });
   };
 
   // Экран 1: главные разделы
@@ -578,17 +589,21 @@ export default function Catalog() {
         <BackButton onClick={() => setScreen('legal')} title="Корпоративные услуги" />
         <div className="px-4 space-y-3 pb-4">
           {[
-            { label: 'Корпоративное сопровождение', msg: 'Интересует корпоративное сопровождение' },
-            { label: 'Открытие компаний',            msg: 'Хочу узнать про открытие компании' },
-            { label: 'Бизнес под ключ',              msg: 'Интересует услуга «Бизнес под ключ»' },
+            { label: 'Корпоративное сопровождение', msg: 'Интересует корпоративное сопровождение', sub: 'Юридическое сопровождение бизнеса' },
+            { label: 'Открытие компаний',            msg: 'Хочу узнать про открытие компании',     sub: 'Регистрация и оформление компании' },
+            { label: 'Бизнес под ключ',              msg: 'Интересует услуга «Бизнес под ключ»',   sub: 'Полное сопровождение открытия бизнеса' },
           ].map(item => (
             <BigButton
               key={item.label}
               label={item.label}
-              onClick={() => {
-                const text = encodeURIComponent(item.msg);
-                window.open(`https://t.me/Torontocake?text=${text}`, '_blank');
-              }}
+              onClick={() => navigate('/order-confirm', {
+                state: {
+                  title: item.label,
+                  subtitle: item.sub,
+                  fields: [{ label: 'Раздел', value: 'Корпоративные услуги' }],
+                  telegramMsg: item.msg,
+                },
+              })}
             />
           ))}
         </div>
@@ -603,10 +618,14 @@ export default function Catalog() {
       <div className="px-4 space-y-3 pb-4">
         <BigButton
           label="Консультация по финансовым вопросам"
-          onClick={() => {
-            const text = encodeURIComponent('Хочу получить консультацию по финансовым вопросам');
-            window.open(`https://t.me/Torontocake?text=${text}`, '_blank');
-          }}
+          onClick={() => navigate('/order-confirm', {
+            state: {
+              title: 'Консультация по финансовым вопросам',
+              subtitle: 'Персональная консультация по финансовым и налоговым вопросам',
+              fields: [{ label: 'Раздел', value: 'Юридические услуги' }],
+              telegramMsg: 'Хочу получить консультацию по финансовым вопросам',
+            },
+          })}
         />
         <BigButton
           label="Корпоративные услуги"
@@ -614,10 +633,14 @@ export default function Catalog() {
         />
         <BigButton
           label="Бухгалтерские услуги"
-          onClick={() => {
-            const text = encodeURIComponent('Интересуют бухгалтерские услуги');
-            window.open(`https://t.me/Torontocake?text=${text}`, '_blank');
-          }}
+          onClick={() => navigate('/order-confirm', {
+            state: {
+              title: 'Бухгалтерские услуги',
+              subtitle: 'Ведение бухгалтерии, отчётность и налоговое сопровождение',
+              fields: [{ label: 'Раздел', value: 'Юридические услуги' }],
+              telegramMsg: 'Интересуют бухгалтерские услуги',
+            },
+          })}
         />
       </div>
     </div>

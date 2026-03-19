@@ -9,6 +9,7 @@ import GameReleases from './pages/GameReleases';
 import Favorites from './pages/Favorites';
 import Profile from './pages/Profile';
 import Admin from './pages/Admin';
+import OrderConfirm from './pages/OrderConfirm';
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/order-confirm" element={<OrderConfirm />} />
         </Routes>
         <BottomNav />
       </div>

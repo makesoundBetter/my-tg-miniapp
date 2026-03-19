@@ -34,8 +34,17 @@ export default function ServiceDetail() {
         localStorage.setItem('service_history', JSON.stringify(history));
       }
     } catch {}
-    const text = encodeURIComponent(`Хочу узнать цену и заказать: ${service.name}`);
-    window.open(`https://t.me/Torontocake?text=${text}`, '_blank');
+    navigate('/order-confirm', {
+      state: {
+        title: service.name,
+        subtitle: service.description,
+        fields: [
+          { label: 'Услуга', value: service.name },
+          { label: 'Стоимость', value: 'По запросу' },
+        ],
+        telegramMsg: `Хочу узнать цену и заказать: ${service.name}`,
+      },
+    });
   };
 
   return (
