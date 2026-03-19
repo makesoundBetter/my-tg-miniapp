@@ -5,7 +5,6 @@ import Catalog from './pages/Catalog';
 import ServiceDetail from './pages/ServiceDetail';
 import Search from './pages/Search';
 import News from './pages/News';
-import GameReleases from './pages/GameReleases';
 import Favorites from './pages/Favorites';
 import Profile from './pages/Profile';
 import Admin from './pages/Admin';
@@ -21,8 +20,7 @@ export default function App() {
           <Route path="/service/:id" element={<ServiceDetail />} />
           <Route path="/search" element={<Search />} />
           <Route path="/news" element={<News />} />
-          <Route path="/games" element={<GameReleases />} />
-          <Route path="/favorites" element={<Favorites />} />
+<Route path="/favorites" element={<Favorites />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/order-confirm" element={<OrderConfirm />} />

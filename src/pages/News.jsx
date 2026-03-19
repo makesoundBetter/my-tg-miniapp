@@ -56,20 +56,7 @@ export default function News() {
     <div style={{ minHeight: '100vh', background: '#0D0D0D', paddingBottom: '80px' }}>
       <div style={{ padding: '24px 16px 16px' }}>
         <p style={{ color: '#555', fontSize: '10px', letterSpacing: '0.2em', marginBottom: '4px' }}>ЛЕНТА</p>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h1 style={{ color: '#fff', fontSize: '24px', fontWeight: 'bold' }}>Новости</h1>
-          <a
-            href={`https://t.me/${CHANNEL}`}
-            target="_blank"
-            rel="noreferrer"
-            style={{
-              color: '#F5E642', fontSize: '11px', border: '1px solid #2a2000',
-              background: '#1a1500', padding: '5px 12px', letterSpacing: '0.08em',
-            }}
-          >
-            Канал →
-          </a>
-        </div>
+        <h1 style={{ color: '#fff', fontSize: '24px', fontWeight: 'bold' }}>Новости</h1>
       </div>
 
       {/* Загрузка */}
@@ -97,49 +84,33 @@ export default function News() {
       )}
 
       {!loading && !error && posts.map(post => (
-        <a
+        <div
           key={post.id}
-          href={`https://t.me/${CHANNEL}/${post.id.split('/')[1] || ''}`}
-          target="_blank"
-          rel="noreferrer"
-          style={{ display: 'block', textDecoration: 'none' }}
+          style={{ borderBottom: '1px solid #1a1a1a', padding: '16px' }}
         >
-          <div style={{
-            borderBottom: '1px solid #1a1a1a',
-            padding: '16px',
-            transition: 'background 0.15s',
-          }}
-            onMouseEnter={e => e.currentTarget.style.background = '#111'}
-            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-          >
-            {/* Фото */}
-            {post.photo && (
-              <div style={{
-                width: '100%', height: '180px', marginBottom: '12px',
-                background: `url(${post.photo}) center/cover no-repeat`,
-                borderRadius: '2px',
-              }} />
-            )}
+          {/* Фото */}
+          {post.photo && (
+            <div style={{
+              width: '100%', height: '180px', marginBottom: '12px',
+              background: `url(${post.photo}) center/cover no-repeat`,
+              borderRadius: '2px',
+            }} />
+          )}
 
-            {/* Текст */}
-            {post.text && (
-              <p style={{
-                color: '#ccc', fontSize: '14px', lineHeight: 1.6,
-                display: '-webkit-box', WebkitLineClamp: 5,
-                WebkitBoxOrient: 'vertical', overflow: 'hidden',
-              }}>
-                {post.text}
-              </p>
-            )}
+          {/* Текст */}
+          {post.text && (
+            <p style={{ color: '#ccc', fontSize: '14px', lineHeight: 1.6 }}>
+              {post.text}
+            </p>
+          )}
 
-            {/* Дата */}
-            {post.date && (
-              <p style={{ color: '#444', fontSize: '10px', marginTop: '10px', letterSpacing: '0.05em' }}>
-                {formatDate(post.date)} · {formatTime(post.date)}
-              </p>
-            )}
-          </div>
-        </a>
+          {/* Дата */}
+          {post.date && (
+            <p style={{ color: '#444', fontSize: '10px', marginTop: '10px', letterSpacing: '0.05em' }}>
+              {formatDate(post.date)} · {formatTime(post.date)}
+            </p>
+          )}
+        </div>
       ))}
     </div>
   );
