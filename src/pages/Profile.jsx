@@ -51,30 +51,36 @@ function ServiceLogo({ logo, emoji }) {
   return <span style={{ fontSize: '20px' }}>{emoji}</span>;
 }
 
-function SubCard({ svc, sub, active }) {
-  const daysLeft = active ? Math.ceil((new Date(sub.endDate) - new Date()) / 86400000) : null;
+function SubCard({ sub }) {
+  const svc = services.find(s => s.id === sub.serviceId);
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const end = new Date(sub.endDate);
+  end.setHours(0, 0, 0, 0);
+  const daysLeft = Math.ceil((end - now) / 86400000);
+
   return (
     <div style={{
-      background: '#0f0f0f', border: `1px solid ${active ? '#2a2000' : '#1a1a1a'}`,
+      background: '#0f0f0f', border: '1px solid #2a2000',
       padding: '14px', marginBottom: '10px', borderRadius: '2px',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-        <div style={{ width: '36px', height: '36px', background: '#111', border: '1px solid #1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <ServiceLogo logo={svc.logo} emoji={svc.emoji} />
-        </div>
+        {svc && (
+          <div style={{ width: '36px', height: '36px', background: '#111', border: '1px solid #1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <ServiceLogo logo={svc.logo} emoji={svc.emoji} />
+          </div>
+        )}
         <div style={{ flex: 1 }}>
-          <p style={{ color: '#fff', fontWeight: '600', fontSize: '14px' }}>{svc.name}</p>
-          {active && daysLeft !== undefined && (
-            <p style={{ color: '#F5E642', fontSize: '11px', marginTop: '2px' }}>Осталось {daysLeft} дн.</p>
-          )}
+          <p style={{ color: '#fff', fontWeight: '600', fontSize: '14px' }}>{svc ? svc.name : sub.title}</p>
+          <p style={{ color: '#F5E642', fontSize: '11px', marginTop: '2px' }}>
+            {daysLeft > 0 ? `Осталось ${daysLeft} дн.` : 'Истекает сегодня'}
+          </p>
         </div>
         <span style={{
-          background: active ? '#0a1a00' : '#1a1a1a',
-          color: active ? '#4caf50' : '#444',
-          border: `1px solid ${active ? '#1a3000' : '#2a2a2a'}`,
+          background: '#0a1a00', color: '#4caf50', border: '1px solid #1a3000',
           fontSize: '9px', letterSpacing: '0.1em', padding: '3px 8px', whiteSpace: 'nowrap',
         }}>
-          {active ? 'АКТИВНА' : 'ИСТЕКЛА'}
+          АКТИВНА
         </span>
       </div>
       <div style={{ display: 'flex', borderTop: '1px solid #1a1a1a', paddingTop: '10px' }}>
@@ -84,7 +90,7 @@ function SubCard({ svc, sub, active }) {
         </div>
         <div style={{ flex: 1 }}>
           <p style={{ color: '#444', fontSize: '9px', letterSpacing: '0.1em', marginBottom: '3px' }}>ОКОНЧАНИЕ</p>
-          <p style={{ color: active ? '#fff' : '#555', fontSize: '13px' }}>{new Date(sub.endDate).toLocaleDateString('ru-RU')}</p>
+          <p style={{ color: '#fff', fontSize: '13px' }}>{new Date(sub.endDate).toLocaleDateString('ru-RU')}</p>
         </div>
       </div>
     </div>
@@ -97,8 +103,8 @@ export default function Profile() {
   const user = getUser();
   const orders = getOrders();
   const subscriptions = getSubscriptions();
-  const activeSubs = subscriptions.filter(s => new Date(s.endDate) >= new Date());
-  const expiredSubs = subscriptions.filter(s => new Date(s.endDate) < new Date());
+  const now = new Date(); now.setHours(0, 0, 0, 0);
+  const activeSubs = subscriptions.filter(s => new Date(s.endDate) >= now);
 
   // ── Экран заказов ──
   if (screen === 'orders') {
@@ -176,33 +182,14 @@ export default function Profile() {
           <p style={{ color: '#555', fontSize: '10px', letterSpacing: '0.15em', marginBottom: '16px' }}>АКТИВНЫЕ ПОДПИСКИ</p>
         </div>
         <div style={{ padding: '0 16px 16px' }}>
-          {activeSubs.length === 0 && expiredSubs.length === 0 ? (
+          {activeSubs.length === 0 ? (
             <div style={{ textAlign: 'center', paddingTop: '48px' }}>
               <p style={{ color: '#2a2a2a', fontSize: '48px', marginBottom: '16px' }}>◎</p>
               <p style={{ color: '#fff', fontWeight: '600', marginBottom: '8px' }}>Нет активных подписок</p>
-              <p style={{ color: '#444', fontSize: '13px', lineHeight: 1.5 }}>После оформления подписки через оператора она появится здесь</p>
+              <p style={{ color: '#444', fontSize: '13px', lineHeight: 1.5 }}>Подписки появятся здесь после завершения заказа оператором</p>
             </div>
           ) : (
-            <div>
-              {activeSubs.length > 0 && (
-                <div style={{ marginBottom: '24px' }}>
-                  <p style={{ color: '#555', fontSize: '10px', letterSpacing: '0.15em', marginBottom: '10px' }}>АКТИВНЫЕ</p>
-                  {activeSubs.map((sub, i) => {
-                    const svc = services.find(s => s.id === sub.serviceId);
-                    return svc ? <SubCard key={i} svc={svc} sub={sub} active /> : null;
-                  })}
-                </div>
-              )}
-              {expiredSubs.length > 0 && (
-                <div>
-                  <p style={{ color: '#555', fontSize: '10px', letterSpacing: '0.15em', marginBottom: '10px' }}>ИСТЕКШИЕ</p>
-                  {expiredSubs.map((sub, i) => {
-                    const svc = services.find(s => s.id === sub.serviceId);
-                    return svc ? <SubCard key={i} svc={svc} sub={sub} active={false} /> : null;
-                  })}
-                </div>
-              )}
-            </div>
+            activeSubs.map((sub, i) => <SubCard key={i} sub={sub} />)
           )}
         </div>
       </div>

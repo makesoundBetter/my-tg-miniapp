@@ -37,7 +37,33 @@ function StatusBadge({ status }) {
   );
 }
 
+function saveSubscription(order, startDate, endDate) {
+  try {
+    const subs = JSON.parse(localStorage.getItem('subscriptions') || '[]');
+    subs.unshift({
+      serviceId: order.serviceId || null,
+      title: order.title,
+      startDate,
+      endDate,
+      orderId: order.id,
+    });
+    localStorage.setItem('subscriptions', JSON.stringify(subs));
+  } catch {}
+}
+
 function OrderCard({ order, onStatus }) {
+  const [showDateForm, setShowDateForm] = useState(false);
+  const today = new Date().toISOString().slice(0, 10);
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState('');
+
+  const handleComplete = () => {
+    if (!startDate || !endDate) return;
+    saveSubscription(order, startDate, endDate);
+    onStatus(order.id, 'completed');
+    setShowDateForm(false);
+  };
+
   return (
     <div style={{
       background: '#0a0a0a', border: '1px solid #1e1e1e',
@@ -91,12 +117,12 @@ function OrderCard({ order, onStatus }) {
       )}
 
       {/* Кнопки статуса */}
-      <div style={{ padding: '10px 14px', display: 'flex', gap: '8px' }}>
+      <div style={{ padding: '10px 14px' }}>
         {order.status === 'pending' && (
           <button
             onClick={() => onStatus(order.id, 'paid')}
             style={{
-              flex: 1, background: '#001a2a', border: '1px solid #002a40',
+              width: '100%', background: '#001a2a', border: '1px solid #002a40',
               color: '#4fc3f7', padding: '10px', fontSize: '11px',
               letterSpacing: '0.08em', fontWeight: '600', borderRadius: '2px',
             }}
@@ -104,20 +130,82 @@ function OrderCard({ order, onStatus }) {
             Отметить оплаченным
           </button>
         )}
-        {order.status === 'paid' && (
+
+        {order.status === 'paid' && !showDateForm && (
           <button
-            onClick={() => onStatus(order.id, 'completed')}
+            onClick={() => setShowDateForm(true)}
             style={{
-              flex: 1, background: '#0a1a00', border: '1px solid #1a3000',
+              width: '100%', background: '#0a1a00', border: '1px solid #1a3000',
               color: '#4caf50', padding: '10px', fontSize: '11px',
               letterSpacing: '0.08em', fontWeight: '600', borderRadius: '2px',
             }}
           >
-            Отметить завершённым
+            Завершить и выставить подписку →
           </button>
         )}
+
+        {order.status === 'paid' && showDateForm && (
+          <div style={{ background: '#0a0a0a', border: '1px solid #1a3000', borderRadius: '2px', padding: '14px' }}>
+            <p style={{ color: '#4caf50', fontSize: '10px', letterSpacing: '0.15em', marginBottom: '12px' }}>ДИАПАЗОН ПОДПИСКИ</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+              <div>
+                <p style={{ color: '#444', fontSize: '9px', letterSpacing: '0.1em', marginBottom: '5px' }}>НАЧАЛО</p>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={e => setStartDate(e.target.value)}
+                  style={{
+                    background: '#111', border: '1px solid #2A2A2A', color: '#fff',
+                    width: '100%', padding: '8px 10px', fontSize: '13px',
+                    borderRadius: '2px', outline: 'none',
+                  }}
+                />
+              </div>
+              <div>
+                <p style={{ color: '#444', fontSize: '9px', letterSpacing: '0.1em', marginBottom: '5px' }}>ОКОНЧАНИЕ</p>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={e => setEndDate(e.target.value)}
+                  min={startDate}
+                  style={{
+                    background: '#111', border: '1px solid #2A2A2A', color: '#fff',
+                    width: '100%', padding: '8px 10px', fontSize: '13px',
+                    borderRadius: '2px', outline: 'none',
+                  }}
+                />
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                onClick={() => setShowDateForm(false)}
+                style={{
+                  flex: 1, background: '#111', border: '1px solid #2A2A2A',
+                  color: '#555', padding: '10px', fontSize: '11px', borderRadius: '2px',
+                }}
+              >
+                Отмена
+              </button>
+              <button
+                onClick={handleComplete}
+                disabled={!endDate}
+                style={{
+                  flex: 2,
+                  background: endDate ? '#0a1a00' : '#111',
+                  border: `1px solid ${endDate ? '#1a3000' : '#2A2A2A'}`,
+                  color: endDate ? '#4caf50' : '#444',
+                  padding: '10px', fontSize: '11px',
+                  letterSpacing: '0.08em', fontWeight: '600', borderRadius: '2px',
+                }}
+              >
+                Подтвердить завершение
+              </button>
+            </div>
+          </div>
+        )}
+
         {order.status === 'completed' && (
-          <p style={{ color: '#333', fontSize: '11px', padding: '10px 0' }}>Заказ завершён</p>
+          <p style={{ color: '#333', fontSize: '11px', padding: '6px 0' }}>Заказ завершён · подписка активирована</p>
         )}
       </div>
     </div>

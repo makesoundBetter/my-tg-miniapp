@@ -36,6 +36,7 @@ export default function ServiceDetail() {
     } catch {}
     navigate('/order-confirm', {
       state: {
+        serviceId: service.id,
         title: service.name,
         subtitle: service.description,
         fields: [
