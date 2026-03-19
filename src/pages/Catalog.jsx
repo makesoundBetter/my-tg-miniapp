@@ -94,6 +94,7 @@ export default function Catalog() {
   const [sourceSearch, setSourceSearch] = useState('');
   const [sourceCountry, setSourceCountry] = useState(null);   // страна отдачи
   const [sourcePicker, setSourcePicker] = useState(false);
+  const [sourceCurrency, setSourceCurrency] = useState(null); // валюта отдачи
   const [transferMethod, setTransferMethod] = useState(null);
 
   const filtered = selectedCategory ? services.filter(s => s.category === selectedCategory) : [];
@@ -105,6 +106,7 @@ export default function Catalog() {
       `Страна назначения: ${destCountry.name}\n` +
       `Сумма: ${amount} ${currency}\n` +
       `Страна отдачи: ${sourceCountry.name}\n` +
+      `Валюта отдачи: ${sourceCurrency}\n` +
       `Способ передачи: ${transferMethod}`
     );
     window.open(`https://t.me/Torontocake?text=${text}`, '_blank');
@@ -322,6 +324,30 @@ export default function Catalog() {
               </div>
             )}
           </div>
+          {/* Валюта отдачи */}
+          <div>
+            <label style={labelStyle}>Какой валютой отдаёте</label>
+            <div className="flex gap-2 flex-wrap">
+              {CURRENCIES.map(c => (
+                <button
+                  key={c}
+                  onClick={() => setSourceCurrency(c)}
+                  style={{
+                    background: sourceCurrency === c ? '#F5E642' : '#1A1A1A',
+                    color: sourceCurrency === c ? '#000' : '#888',
+                    border: '1px solid #2A2A2A',
+                    padding: '7px 14px',
+                    fontSize: '12px',
+                    fontWeight: sourceCurrency === c ? 'bold' : 'normal',
+                    borderRadius: '2px',
+                  }}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Способ передачи */}
           <div>
             <label style={labelStyle}>Способ передачи</label>
@@ -372,10 +398,10 @@ export default function Catalog() {
         <div className="fixed bottom-[70px] left-0 right-0 p-4">
           <button
             onClick={handleSendRequest}
-            disabled={!amount || !sourceCountry || !transferMethod}
+            disabled={!amount || !sourceCountry || !sourceCurrency || !transferMethod}
             style={{
-              background: amount && sourceCountry && transferMethod ? '#F5E642' : '#1a1a1a',
-              color: amount && sourceCountry && transferMethod ? '#000' : '#444',
+              background: amount && sourceCountry && sourceCurrency && transferMethod ? '#F5E642' : '#1a1a1a',
+              color: amount && sourceCountry && sourceCurrency && transferMethod ? '#000' : '#444',
               border: '1px solid #2A2A2A',
               width: '100%',
               padding: '16px',
