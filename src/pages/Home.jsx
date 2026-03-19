@@ -110,7 +110,7 @@ function DeparturesBoard() {
   );
 }
 
-/* ─────────────────── CYBER GRID ─────────────────── */
+/* ─────────────────── STAIRCASE ─────────────────── */
 
 function CyberGrid() {
   const canvasRef = useRef(null);
@@ -132,102 +132,131 @@ function CyberGrid() {
 
     const W = cssW;
     const H = cssH;
-    const vpx = W / 2;
-    const vpy = H * 0.42;
 
-    let t = 0;
+    // Базовые размеры ближней ступени (снизу-слева)
+    const sw0  = Math.min(W, H) * 0.27;  // ширина проступи
+    const rh0  = sw0 * 0.28;             // высота подступёнка (≈1/4 от sw0)
+    const depX0 = sw0 * 0.16;            // глубина → вправо
+    const depY0 = -rh0 * 0.55;           // глубина → вверх
+
+    // Предвычисляем позиции ступеней с перспективным сокращением
+    const numSteps = 18;
+    const stepsData = [];
+    let cx = W * 0.03, cy = H * 0.90;
+    for (let i = 0; i < numSteps; i++) {
+      const t = i / (numSteps - 1);
+      // Перспективный масштаб: ближние=1, дальние=0.15
+      const scale = Math.pow(1 - t * 0.85, 1.1);
+      const sw   = sw0  * scale;
+      const rh   = rh0  * scale;
+      const depX = depX0 * scale;
+      const depY = depY0 * scale;
+      stepsData.push({ x: cx, y: cy, sw, rh, depX, depY, scale });
+      cx += sw;
+      cy -= rh;
+    }
+
+    function drawStep({ x, y, sw, rh, depX, depY, scale }) {
+      const alpha = 0.18 + scale * 0.78;
+
+      // ── Проступь (параллелограмм — доминирующая поверхность) ──
+      ctx.beginPath();
+      ctx.moveTo(x,             y);
+      ctx.lineTo(x + sw,        y);
+      ctx.lineTo(x + sw + depX, y + depY);
+      ctx.lineTo(x      + depX, y + depY);
+      ctx.closePath();
+      ctx.fillStyle = `rgba(245,230,66,${alpha * 0.09})`;
+      ctx.fill();
+
+      // Передний край проступи — самая яркая линия
+      ctx.beginPath();
+      ctx.moveTo(x,      y);
+      ctx.lineTo(x + sw, y);
+      ctx.strokeStyle = `rgba(245,230,66,${alpha})`;
+      ctx.lineWidth = 1.0 + scale * 2.0;
+      ctx.stroke();
+
+      // Боковые и задний края проступи
+      ctx.beginPath();
+      ctx.moveTo(x,             y);
+      ctx.lineTo(x + depX,      y + depY);
+      ctx.moveTo(x + sw,        y);
+      ctx.lineTo(x + sw + depX, y + depY);
+      ctx.moveTo(x + depX,      y + depY);
+      ctx.lineTo(x + sw + depX, y + depY);
+      ctx.strokeStyle = `rgba(245,230,66,${alpha * 0.42})`;
+      ctx.lineWidth = 0.6 + scale * 0.4;
+      ctx.stroke();
+
+      // ── Подступёнок (тонкая вертикальная грань снизу) ──
+      ctx.beginPath();
+      ctx.moveTo(x,      y);
+      ctx.lineTo(x + sw, y);
+      ctx.lineTo(x + sw, y + rh);
+      ctx.lineTo(x,      y + rh);
+      ctx.closePath();
+      ctx.fillStyle = `rgba(245,230,66,${alpha * 0.07})`;
+      ctx.fill();
+
+      // Нижний и боковые края подступёнка
+      ctx.beginPath();
+      ctx.moveTo(x,      y + rh);
+      ctx.lineTo(x + sw, y + rh);
+      ctx.strokeStyle = `rgba(245,230,66,${alpha * 0.28})`;
+      ctx.lineWidth = 0.6;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(x,      y); ctx.lineTo(x,      y + rh);
+      ctx.moveTo(x + sw, y); ctx.lineTo(x + sw, y + rh);
+      ctx.strokeStyle = `rgba(245,230,66,${alpha * 0.15})`;
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
 
     function draw() {
       ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#020202';
+      ctx.fillRect(0, 0, W, H);
 
-      // ── Небо (выше горизонта) ──
-      const sky = ctx.createLinearGradient(0, 0, 0, vpy);
-      sky.addColorStop(0, '#000000');
-      sky.addColorStop(1, '#060400');
-      ctx.fillStyle = sky;
-      ctx.fillRect(0, 0, W, vpy);
-
-      // ── Земля / дорога (ниже горизонта) ──
-      const ground = ctx.createLinearGradient(0, vpy, 0, H);
-      ground.addColorStop(0, '#070500');
-      ground.addColorStop(1, '#0c0900');
-      ctx.fillStyle = ground;
-      ctx.fillRect(0, vpy, W, H - vpy);
-
-      // ── Клип: рисуем только в зоне дороги (ниже горизонта) ──
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(0, vpy, W, H - vpy);
-      ctx.clip();
-
-      // ── Вертикальные линии — разброс адаптивный под любой экран ──
-      const VCOLS = 10;
-      for (let i = 0; i <= VCOLS; i++) {
-        const t0 = i / VCOLS;
-        // Берём максимум из ширины и высоты дороги — работает на любом устройстве
-        const spread = Math.max(W, H - vpy) * 2.56;
-        const xBottom = vpx + (t0 - 0.5) * spread * 2;
-        const dist = Math.abs(t0 - 0.5) * 2;
-        const alpha = 0.07 + dist * 0.18;
-
-        ctx.beginPath();
-        ctx.moveTo(vpx, vpy);
-        ctx.lineTo(xBottom, H);
-        ctx.strokeStyle = `rgba(245,230,66,${alpha})`;
-        ctx.lineWidth = 0.6;
-        ctx.stroke();
+      // Рисуем от дальних (верх-право) к ближним (низ-лево)
+      for (let i = stepsData.length - 1; i >= 0; i--) {
+        const s = stepsData[i];
+        if (s.x > W + s.sw * 2) continue;
+        if (s.x + s.sw < -s.sw) continue;
+        if (s.y + s.rh < -s.rh * 2) continue;
+        if (s.y + s.depY > H + s.rh) continue;
+        drawStep(s);
       }
 
-      // ── Горизонтальные линии от края до края ──
-      const HROWS = 18;
-      const speed = 0.35;
-      const offset = (t * speed) % 1;
+      // Туман верх-право (лестница уходит вдаль)
+      const fogTR = ctx.createLinearGradient(W * 0.4, 0, W, 0);
+      fogTR.addColorStop(0, 'rgba(2,2,2,0)');
+      fogTR.addColorStop(1, 'rgba(2,2,2,0.92)');
+      ctx.fillStyle = fogTR;
+      ctx.fillRect(0, 0, W, H);
 
-      for (let i = 0; i < HROWS; i++) {
-        const frac = (i + offset) / HROWS;
-        const p = Math.pow(frac, 2.0);
+      const fogTop = ctx.createLinearGradient(0, 0, 0, H * 0.15);
+      fogTop.addColorStop(0, 'rgba(2,2,2,0.92)');
+      fogTop.addColorStop(1, 'rgba(2,2,2,0)');
+      ctx.fillStyle = fogTop;
+      ctx.fillRect(0, 0, W, H * 0.15);
 
-        const y = vpy + p * (H - vpy);
-        if (y > H) continue;
+      // Туман низ-лево
+      const fogBL = ctx.createLinearGradient(0, H * 0.80, 0, H);
+      fogBL.addColorStop(0, 'rgba(2,2,2,0)');
+      fogBL.addColorStop(1, 'rgba(2,2,2,0.92)');
+      ctx.fillStyle = fogBL;
+      ctx.fillRect(0, H * 0.80, W, H * 0.20);
 
-        const progress = (y - vpy) / (H - vpy);
-        const xl = 0;
-        const xr = W;
-
-        const alpha = Math.min(progress * 0.85, 0.65);
-        ctx.beginPath();
-        ctx.moveTo(xl, y);
-        ctx.lineTo(xr, y);
-        ctx.strokeStyle = `rgba(245,230,66,${alpha})`;
-        ctx.lineWidth = 0.3 + progress * 2.2;
-        ctx.stroke();
-      }
-
-      ctx.restore(); // снимаем клип дороги
-
-      // ── Линия горизонта ──
-      ctx.beginPath();
-      ctx.moveTo(0, vpy);
-      ctx.lineTo(W, vpy);
-      ctx.strokeStyle = 'rgba(245,230,66,0.18)';
-      ctx.lineWidth = 0.8;
-      ctx.stroke();
-
-      // ── Свечение на горизонте ──
-      const glow = ctx.createRadialGradient(vpx, vpy, 0, vpx, vpy, W * 0.6);
-      glow.addColorStop(0, 'rgba(245,230,66,0.1)');
+      // Слабое жёлтое свечение
+      const glow = ctx.createRadialGradient(W * 0.42, H * 0.52, 0, W * 0.42, H * 0.52, W * 0.55);
+      glow.addColorStop(0, 'rgba(245,230,66,0.05)');
       glow.addColorStop(1, 'rgba(245,230,66,0)');
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, W, H);
 
-      // ── Туман у ног (нижний край) ──
-      const fog = ctx.createLinearGradient(0, H - 80, 0, H);
-      fog.addColorStop(0, 'rgba(5,5,5,0)');
-      fog.addColorStop(1, 'rgba(5,5,5,0.85)');
-      ctx.fillStyle = fog;
-      ctx.fillRect(0, H - 80, W, 80);
-
-      t += 1 / 60;
       rafRef.current = requestAnimationFrame(draw);
     }
 
