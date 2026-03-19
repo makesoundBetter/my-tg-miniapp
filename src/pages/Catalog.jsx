@@ -571,14 +571,54 @@ export default function Catalog() {
     );
   }
 
-  // Юр. услуги
+  // Юр. услуги — подраздел Корпоративные услуги
+  if (screen === 'legal-corporate') {
+    return (
+      <div>
+        <BackButton onClick={() => setScreen('legal')} title="Корпоративные услуги" />
+        <div className="px-4 space-y-3 pb-4">
+          {[
+            { label: 'Корпоративное сопровождение', msg: 'Интересует корпоративное сопровождение' },
+            { label: 'Открытие компаний',            msg: 'Хочу узнать про открытие компании' },
+            { label: 'Бизнес под ключ',              msg: 'Интересует услуга «Бизнес под ключ»' },
+          ].map(item => (
+            <BigButton
+              key={item.label}
+              label={item.label}
+              onClick={() => {
+                const text = encodeURIComponent(item.msg);
+                window.open(`https://t.me/Torontocake?text=${text}`, '_blank');
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Юр. услуги — главное меню
   return (
     <div>
       <BackButton onClick={() => setScreen('main')} title="Юридические услуги" />
-      <div className="flex flex-col items-center justify-center pt-16 px-8">
-        <span style={{ color: '#F5E642' }} className="text-5xl mb-6">⚖️</span>
-        <p className="text-white font-semibold text-lg mb-2">Юридические услуги</p>
-        <p style={{ color: '#888' }} className="text-sm text-center">Раздел скоро появится.</p>
+      <div className="px-4 space-y-3 pb-4">
+        <BigButton
+          label="Консультация по финансовым вопросам"
+          onClick={() => {
+            const text = encodeURIComponent('Хочу получить консультацию по финансовым вопросам');
+            window.open(`https://t.me/Torontocake?text=${text}`, '_blank');
+          }}
+        />
+        <BigButton
+          label="Корпоративные услуги"
+          onClick={() => setScreen('legal-corporate')}
+        />
+        <BigButton
+          label="Бухгалтерские услуги"
+          onClick={() => {
+            const text = encodeURIComponent('Интересуют бухгалтерские услуги');
+            window.open(`https://t.me/Torontocake?text=${text}`, '_blank');
+          }}
+        />
       </div>
     </div>
   );
