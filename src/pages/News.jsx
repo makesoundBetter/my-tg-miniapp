@@ -4,9 +4,21 @@ const CHANNEL = 'allservicesnew';
 
 async function fetchPosts() {
   const url = `https://t.me/s/${CHANNEL}`;
-  const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-  const res = await fetch(proxy);
-  const html = await res.text();
+  // Два прокси — если первый не работает, используем второй
+  const proxies = [
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  ];
+
+  let html = '';
+  for (const proxy of proxies) {
+    try {
+      const res = await fetch(proxy, { cache: 'no-store' });
+      if (res.ok) { html = await res.text(); break; }
+    } catch {}
+  }
+
+  if (!html) throw new Error('no response');
 
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
@@ -18,15 +30,15 @@ async function fetchPosts() {
     const postEl = el.querySelector('.tgme_widget_message');
     const photoEl = el.querySelector('.tgme_widget_message_photo_wrap');
 
-    const rawText = textEl?.innerText || textEl?.textContent || '';
-    const html = textEl?.innerHTML || '';
+    // textContent вместо innerText — работает в DOMParser
+    const text = textEl ? textEl.textContent.trim() : '';
     const date = dateEl?.getAttribute('datetime') || '';
     const postId = postEl?.dataset?.post || '';
-    const photo = photoEl
-      ? photoEl.style?.backgroundImage?.replace(/url\(["']?|["']?\)/g, '')
-      : null;
+    const photo = photoEl?.style?.backgroundImage
+      ?.replace(/^url\(["']?/, '')
+      ?.replace(/["']?\)$/, '') || null;
 
-    return { id: postId, text: rawText.trim(), html, date, photo };
+    return { id: postId, text, date, photo };
   }).filter(p => p.text || p.photo);
 }
 
