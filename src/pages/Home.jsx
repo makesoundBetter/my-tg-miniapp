@@ -155,11 +155,13 @@ function CyberGrid() {
       ctx.fillRect(0, vpy, W, H - vpy);
 
       // ── Вертикальные линии перспективы ──
-      const VCOLS = 10;
+      const VCOLS = 6;
       for (let i = 0; i <= VCOLS; i++) {
-        const xBottom = (i / VCOLS) * W;
-        const dist = Math.abs((i / VCOLS) - 0.5) * 2;
-        const alpha = 0.06 + dist * 0.22;
+        const t0 = i / VCOLS;
+        // Линии расходятся от центра, но не до края экрана
+        const xBottom = vpx + (t0 - 0.5) * W * 1.4;
+        const dist = Math.abs(t0 - 0.5) * 2;
+        const alpha = 0.08 + dist * 0.18;
 
         ctx.beginPath();
         ctx.moveTo(vpx, vpy);
@@ -176,14 +178,14 @@ function CyberGrid() {
 
       for (let i = 0; i < HROWS; i++) {
         const frac = (i + offset) / HROWS;
-        const p = Math.pow(frac, 2.8); // сильная перспектива
+        const p = Math.pow(frac, 2.0); // мягкая перспектива
 
         const y = vpy + p * (H - vpy);
         if (y > H) continue;
 
         const progress = (y - vpy) / (H - vpy);
-        const xl = vpx - progress * W * 0.5;
-        const xr = vpx + progress * W * 0.5;
+        const xl = vpx - progress * W * 0.7;
+        const xr = vpx + progress * W * 0.7;
 
         const alpha = Math.min(progress * 0.85, 0.65);
         ctx.beginPath();
