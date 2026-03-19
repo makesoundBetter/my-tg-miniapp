@@ -14,20 +14,14 @@ function startsWithWord(str, q) {
 
 function scoreService(service, q) {
   const name = service.name.toLowerCase();
-  const desc = service.description.toLowerCase();
   const cat = getCategoryName(service.category).toLowerCase();
-
-  // Для коротких запросов (< 4 символов) — только начало слова
-  const shortQuery = q.length < 4;
 
   if (name === q) return 100;
   if (name.startsWith(q)) return 90;
   if (startsWithWord(name, q)) return 80;
-  if (!shortQuery && name.includes(q)) return 70;
+  if (name.includes(q)) return 70;
   if (cat.startsWith(q)) return 60;
-  if (!shortQuery && cat.includes(q)) return 50;
-  if (startsWithWord(desc, q)) return 40;
-  if (!shortQuery && desc.includes(q)) return 30;
+  if (cat.includes(q)) return 50;
   return 0;
 }
 
