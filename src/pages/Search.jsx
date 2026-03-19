@@ -17,14 +17,17 @@ function scoreService(service, q) {
   const desc = service.description.toLowerCase();
   const cat = getCategoryName(service.category).toLowerCase();
 
-  if (name === q) return 100;                        // точное совпадение
-  if (name.startsWith(q)) return 90;                // начало названия
-  if (startsWithWord(name, q)) return 80;           // начало слова в названии
-  if (name.includes(q)) return 70;                  // вхождение в название
-  if (cat.startsWith(q)) return 60;                 // начало категории
-  if (cat.includes(q)) return 50;                   // вхождение в категорию
-  if (startsWithWord(desc, q)) return 40;           // начало слова в описании
-  if (desc.includes(q)) return 30;                  // вхождение в описание
+  // Для коротких запросов (< 4 символов) — только начало слова
+  const shortQuery = q.length < 4;
+
+  if (name === q) return 100;
+  if (name.startsWith(q)) return 90;
+  if (startsWithWord(name, q)) return 80;
+  if (!shortQuery && name.includes(q)) return 70;
+  if (cat.startsWith(q)) return 60;
+  if (!shortQuery && cat.includes(q)) return 50;
+  if (startsWithWord(desc, q)) return 40;
+  if (!shortQuery && desc.includes(q)) return 30;
   return 0;
 }
 
