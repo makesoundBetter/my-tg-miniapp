@@ -133,73 +133,88 @@ function CyberGrid() {
     const W = cssW;
     const H = cssH;
     const vpx = W / 2;
-    const vpy = H * 0.28;
+    const vpy = H * 0.42; // горизонт на уровне глаз
 
     let t = 0;
 
     function draw() {
       ctx.clearRect(0, 0, W, H);
 
-      // Background gradient
-      const bg = ctx.createLinearGradient(0, 0, 0, H);
-      bg.addColorStop(0, '#050505');
-      bg.addColorStop(1, '#0a0800');
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, W, H);
+      // ── Небо (выше горизонта) ──
+      const sky = ctx.createLinearGradient(0, 0, 0, vpy);
+      sky.addColorStop(0, '#000000');
+      sky.addColorStop(1, '#060400');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, W, vpy);
 
-      // ── Vertical perspective lines ──
+      // ── Земля / дорога (ниже горизонта) ──
+      const ground = ctx.createLinearGradient(0, vpy, 0, H);
+      ground.addColorStop(0, '#070500');
+      ground.addColorStop(1, '#0c0900');
+      ctx.fillStyle = ground;
+      ctx.fillRect(0, vpy, W, H - vpy);
+
+      // ── Вертикальные линии перспективы ──
       const VCOLS = 10;
       for (let i = 0; i <= VCOLS; i++) {
-        const x = (i / VCOLS) * W;
+        const xBottom = (i / VCOLS) * W;
         const dist = Math.abs((i / VCOLS) - 0.5) * 2;
-        const alpha = 0.08 + dist * 0.15;
+        const alpha = 0.06 + dist * 0.22;
 
         ctx.beginPath();
         ctx.moveTo(vpx, vpy);
-        ctx.lineTo(x, H);
+        ctx.lineTo(xBottom, H);
         ctx.strokeStyle = `rgba(245,230,66,${alpha})`;
         ctx.lineWidth = 0.6;
         ctx.stroke();
       }
 
-      // ── Horizontal lines scrolling toward viewer ──
-      const HROWS = 14;
-      const speed = 0.25;
+      // ── Горизонтальные линии, летящие на зрителя ──
+      const HROWS = 18;
+      const speed = 0.35;
       const offset = (t * speed) % 1;
 
       for (let i = 0; i < HROWS; i++) {
-        const frac = ((i + offset) / HROWS);
-        const p = Math.pow(frac, 2.2); // perspective curve
+        const frac = (i + offset) / HROWS;
+        const p = Math.pow(frac, 2.8); // сильная перспектива
 
         const y = vpy + p * (H - vpy);
         if (y > H) continue;
 
         const progress = (y - vpy) / (H - vpy);
-        const xl = vpx - progress * vpx;
-        const xr = vpx + progress * (W - vpx);
+        const xl = vpx - progress * W * 0.5;
+        const xr = vpx + progress * W * 0.5;
 
-        const alpha = Math.min(progress * 0.75, 0.55);
+        const alpha = Math.min(progress * 0.85, 0.65);
         ctx.beginPath();
         ctx.moveTo(xl, y);
         ctx.lineTo(xr, y);
         ctx.strokeStyle = `rgba(245,230,66,${alpha})`;
-        ctx.lineWidth = 0.3 + progress * 1.8;
+        ctx.lineWidth = 0.3 + progress * 2.2;
         ctx.stroke();
       }
 
-      // ── Horizon glow ──
-      const glow = ctx.createRadialGradient(vpx, vpy, 0, vpx, vpy, W * 0.4);
-      glow.addColorStop(0, 'rgba(245,230,66,0.06)');
+      // ── Линия горизонта ──
+      ctx.beginPath();
+      ctx.moveTo(0, vpy);
+      ctx.lineTo(W, vpy);
+      ctx.strokeStyle = 'rgba(245,230,66,0.18)';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+
+      // ── Свечение на горизонте ──
+      const glow = ctx.createRadialGradient(vpx, vpy, 0, vpx, vpy, W * 0.6);
+      glow.addColorStop(0, 'rgba(245,230,66,0.1)');
       glow.addColorStop(1, 'rgba(245,230,66,0)');
       ctx.fillStyle = glow;
-      ctx.fillRect(0, vpy - 30, W, 80);
+      ctx.fillRect(0, 0, W, H);
 
-      // ── Fog at bottom ──
-      const fog = ctx.createLinearGradient(0, H - 50, 0, H);
+      // ── Туман у ног (нижний край) ──
+      const fog = ctx.createLinearGradient(0, H - 80, 0, H);
       fog.addColorStop(0, 'rgba(5,5,5,0)');
-      fog.addColorStop(1, 'rgba(5,5,5,0.95)');
+      fog.addColorStop(1, 'rgba(5,5,5,0.85)');
       ctx.fillStyle = fog;
-      ctx.fillRect(0, H - 50, W, 50);
+      ctx.fillRect(0, H - 80, W, 80);
 
       t += 1 / 60;
       rafRef.current = requestAnimationFrame(draw);
