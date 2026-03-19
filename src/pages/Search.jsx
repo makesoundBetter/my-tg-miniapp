@@ -3,6 +3,31 @@ import { services, categories } from '../data/services';
 import SearchBar from '../components/SearchBar';
 import ServiceCard from '../components/ServiceCard';
 
+function getCategoryName(categoryId) {
+  return categories.find(c => c.id === categoryId)?.name || '';
+}
+
+// Разбивает строку на слова и проверяет начало каждого слова
+function startsWithWord(str, q) {
+  return str.split(/[\s\-_/]+/).some(word => word.toLowerCase().startsWith(q));
+}
+
+function scoreService(service, q) {
+  const name = service.name.toLowerCase();
+  const desc = service.description.toLowerCase();
+  const cat = getCategoryName(service.category).toLowerCase();
+
+  if (name === q) return 100;                        // точное совпадение
+  if (name.startsWith(q)) return 90;                // начало названия
+  if (startsWithWord(name, q)) return 80;           // начало слова в названии
+  if (name.includes(q)) return 70;                  // вхождение в название
+  if (cat.startsWith(q)) return 60;                 // начало категории
+  if (cat.includes(q)) return 50;                   // вхождение в категорию
+  if (startsWithWord(desc, q)) return 40;           // начало слова в описании
+  if (desc.includes(q)) return 30;                  // вхождение в описание
+  return 0;
+}
+
 function SectionLabel({ label }) {
   return (
     <p style={{ color: '#444', letterSpacing: '0.15em', borderBottom: '1px solid #1a1a1a' }}
@@ -16,12 +41,12 @@ export default function Search() {
   const [query, setQuery] = useState('');
   const q = query.toLowerCase().trim();
 
-  const filteredServices = q
-    ? services.filter(s =>
-        s.name.toLowerCase().includes(q) ||
-        s.description.toLowerCase().includes(q) ||
-        (categories.find(c => c.id === s.category)?.name || '').toLowerCase().includes(q)
-      )
+  const filteredServices = q.length > 0
+    ? services
+        .map(s => ({ service: s, score: scoreService(s, q) }))
+        .filter(({ score }) => score > 0)
+        .sort((a, b) => b.score - a.score)
+        .map(({ service }) => service)
     : [];
 
   return (
@@ -36,7 +61,7 @@ export default function Search() {
         <div className="flex flex-col items-center pt-16 px-8">
           <p style={{ color: '#2a2a2a', fontSize: '40px', marginBottom: '12px' }}>⌕</p>
           <p style={{ color: '#555', fontSize: '13px', textAlign: 'center' }}>
-            Ищите по сервисам и категориям
+            Ищите по названию, категории или описанию
           </p>
         </div>
       )}
@@ -47,7 +72,7 @@ export default function Search() {
 
       {filteredServices.length > 0 && (
         <div>
-          <SectionLabel label={`Сервисы — ${filteredServices.length}`} />
+          <SectionLabel label={`Найдено — ${filteredServices.length}`} />
           {filteredServices.map(s => <ServiceCard key={s.id} service={s} />)}
         </div>
       )}
