@@ -44,32 +44,20 @@ function ServiceIcon({ service }) {
 
 export default function Catalog() {
   const navigate = useNavigate();
-  const [screen, setScreen] = useState('main');
+  const [screen, setScreen] = useState('categories');
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const filtered = selectedCategory ? services.filter(s => s.category === selectedCategory) : [];
   const selectedCat = categories.find(c => c.id === selectedCategory);
 
-  // Экран 1: главные разделы
-  if (screen === 'main') {
+  // Экран 1: список категорий
+  if (screen === 'categories') {
     return (
       <div>
         <div className="p-4 pt-6 pb-4">
           <p style={{ color: '#888', letterSpacing: '0.15em' }} className="text-xs uppercase mb-1">Каталог</p>
           <h1 className="text-2xl font-bold text-white">Услуги</h1>
         </div>
-        <div className="px-4 space-y-3">
-          <BigButton label="Онлайн сервисы" onClick={() => setScreen('online')} />
-        </div>
-      </div>
-    );
-  }
-
-  // Экран 2: подразделения Онлайн сервисов
-  if (screen === 'online') {
-    return (
-      <div>
-        <BackButton onClick={() => setScreen('main')} title="Онлайн сервисы" />
         <div className="px-4 space-y-3">
           {categories.filter(c => c.id !== 'all').map(cat => (
             <BigButton
@@ -83,10 +71,10 @@ export default function Catalog() {
     );
   }
 
-  // Экран 3: список услуг
+  // Экран 2: список услуг
   return (
     <div>
-      <BackButton onClick={() => setScreen('online')} title={selectedCat?.name} />
+      <BackButton onClick={() => setScreen('categories')} title={selectedCat?.name} />
       <div className="px-4 space-y-3 pb-4">
         {filtered.map(service => (
           <button
