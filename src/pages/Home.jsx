@@ -120,7 +120,7 @@ function CyberGrid() {
     const canvas = canvasRef.current;
     const dpr = window.devicePixelRatio || 1;
     const cssW = canvas.parentElement.offsetWidth;
-    const cssH = 210;
+    const cssH = canvas.parentElement.offsetHeight;
 
     canvas.width = cssW * dpr;
     canvas.height = cssH * dpr;
@@ -210,28 +210,8 @@ function CyberGrid() {
   }, []);
 
   return (
-    <div style={{ position: 'relative', borderRadius: '3px', border: '1px solid #181818', overflow: 'hidden' }}>
-      <canvas ref={canvasRef} style={{ display: 'block' }} />
-
-      {/* Overlay: logo + tagline */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        pointerEvents: 'none',
-      }}>
-        <p style={{
-          color: '#F5E642',
-          fontSize: '22px',
-          fontWeight: 'bold',
-          fontFamily: 'monospace',
-          letterSpacing: '0.2em',
-          textShadow: '0 0 18px rgba(245,230,66,0.8), 0 0 40px rgba(245,230,66,0.3)',
-          margin: 0,
-        }}>
-          ALL SERVICES
-        </p>
-      </div>
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+      <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
     </div>
   );
 }
@@ -605,11 +585,38 @@ function ProfileButton() {
 
 export default function Home() {
   return (
-    <div style={{ padding: '16px 16px 22px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
-        <ProfileButton />
-      </div>
+    <div style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
+      {/* Фон на весь экран */}
       <CyberGrid />
+
+      {/* Контент поверх */}
+      <div style={{ position: 'relative', zIndex: 1, padding: '16px 16px 22px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <ProfileButton />
+        </div>
+
+        {/* Логотип по центру */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          textAlign: 'center',
+          pointerEvents: 'none',
+        }}>
+          <p style={{
+            color: '#F5E642',
+            fontSize: '22px',
+            fontWeight: 'bold',
+            fontFamily: 'monospace',
+            letterSpacing: '0.2em',
+            textShadow: '0 0 18px rgba(245,230,66,0.8), 0 0 40px rgba(245,230,66,0.3)',
+            margin: 0,
+          }}>
+            ALL SERVICES
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
