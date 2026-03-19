@@ -19,7 +19,7 @@ export default function BottomNav() {
             to={tab.to}
             end={tab.to === '/'}
             className={({ isActive }) =>
-              `flex-1 flex flex-col items-center py-3 text-xs transition-all ${
+              `relative flex-1 flex flex-col items-center py-3 text-xs transition-all ${
                 isActive
                   ? 'text-yellow-300'
                   : 'text-gray-600'
