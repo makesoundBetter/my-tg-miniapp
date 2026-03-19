@@ -16,6 +16,7 @@ const tg = window.Telegram?.WebApp;
 if (tg) {
   tg.ready();
   tg.expand();
+  tg.requestFullscreen?.();
   tg.disableVerticalSwipes?.();
   tg.setHeaderColor?.('#0D0D0D');
   tg.setBackgroundColor?.('#0D0D0D');
