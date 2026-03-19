@@ -8,7 +8,24 @@ export default function Search() {
   const q = query.toLowerCase().trim();
 
   const results = q
-    ? services.filter(s => s.name.toLowerCase().includes(q))
+    ? services
+        .filter(s => {
+          const name = s.name.toLowerCase();
+          if (q.length <= 3) {
+            // Короткий запрос — только начало названия или начало слова
+            return name.startsWith(q) ||
+              name.split(/[\s.]+/).some(w => w.startsWith(q));
+          }
+          // Длинный запрос — везде в названии
+          return name.includes(q);
+        })
+        .sort((a, b) => {
+          const an = a.name.toLowerCase();
+          const bn = b.name.toLowerCase();
+          if (an.startsWith(q) && !bn.startsWith(q)) return -1;
+          if (!an.startsWith(q) && bn.startsWith(q)) return 1;
+          return 0;
+        })
     : [];
 
   return (
