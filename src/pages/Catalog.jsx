@@ -7,8 +7,6 @@ const CURRENCIES = ['USD', 'EUR', 'RUB', 'GBP', 'AED', 'THB', 'CNY', 'USDT TRC20
 
 const mainSections = [
   { id: 'online', label: 'Онлайн сервисы' },
-  { id: 'moving', label: 'Перестановки' },
-  { id: 'legal', label: 'Юр. услуги' },
 ];
 
 function BigButton({ label, onClick }) {
