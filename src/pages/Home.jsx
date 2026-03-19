@@ -154,14 +154,21 @@ function CyberGrid() {
       ctx.fillStyle = ground;
       ctx.fillRect(0, vpy, W, H - vpy);
 
-      // ── Вертикальные линии перспективы ──
-      // Линии уходят далеко за края экрана — дорога выглядит широкой
-      const VCOLS = 8;
+      // ── Клип: рисуем только в зоне дороги (ниже горизонта) ──
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, vpy, W, H - vpy);
+      ctx.clip();
+
+      // ── Вертикальные линии — широкий разброс, обрезаются клипом ──
+      const VCOLS = 10;
       for (let i = 0; i <= VCOLS; i++) {
         const t0 = i / VCOLS;
-        const xBottom = vpx + (t0 - 0.5) * W * 4;
+        // Разброс = 6 высот дороги — всегда заполняет экран на любом устройстве
+        const spread = (H - vpy) * 6;
+        const xBottom = vpx + (t0 - 0.5) * spread * 2;
         const dist = Math.abs(t0 - 0.5) * 2;
-        const alpha = 0.06 + dist * 0.2;
+        const alpha = 0.07 + dist * 0.18;
 
         ctx.beginPath();
         ctx.moveTo(vpx, vpy);
@@ -171,7 +178,7 @@ function CyberGrid() {
         ctx.stroke();
       }
 
-      // ── Горизонтальные линии, летящие на зрителя ──
+      // ── Горизонтальные линии от края до края ──
       const HROWS = 18;
       const speed = 0.35;
       const offset = (t * speed) % 1;
@@ -184,9 +191,8 @@ function CyberGrid() {
         if (y > H) continue;
 
         const progress = (y - vpy) / (H - vpy);
-        // Горизонтальные линии тоже шире экрана внизу
-        const xl = vpx - progress * W * 2;
-        const xr = vpx + progress * W * 2;
+        const xl = 0;
+        const xr = W;
 
         const alpha = Math.min(progress * 0.85, 0.65);
         ctx.beginPath();
@@ -196,6 +202,8 @@ function CyberGrid() {
         ctx.lineWidth = 0.3 + progress * 2.2;
         ctx.stroke();
       }
+
+      ctx.restore(); // снимаем клип дороги
 
       // ── Линия горизонта ──
       ctx.beginPath();
