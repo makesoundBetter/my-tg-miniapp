@@ -107,6 +107,25 @@ export default function Catalog() {
   const selectedCat = categories.find(c => c.id === selectedCategory);
 
   const handleSendRequest = () => {
+    // Сохраняем в историю перестановок
+    try {
+      const history = JSON.parse(localStorage.getItem('moving_history') || '[]');
+      history.unshift({
+        id: Date.now(),
+        date: new Date().toISOString(),
+        destCountry: destCountry.name,
+        destCode: destCountry.code,
+        amount,
+        currency,
+        sourceCountry: sourceCountry.name,
+        sourceCode: sourceCountry.code,
+        sourceCurrency,
+        transferMethod,
+        status: 'pending',
+      });
+      localStorage.setItem('moving_history', JSON.stringify(history));
+    } catch {}
+
     const text = encodeURIComponent(
       `Перестановка средств\n\n` +
       `Страна назначения: ${destCountry.name}\n` +
