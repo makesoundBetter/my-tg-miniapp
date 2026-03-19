@@ -6,6 +6,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 :root {
@@ -15,18 +16,60 @@
   --gray2: #2A2A2A;
   --text: #FFFFFF;
   --text-muted: #888888;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+html {
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: var(--black);
   color: var(--text);
-  min-height: 100vh;
+  height: 100%;
+  overflow: hidden;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
 }
 
 #root {
+  height: 100%;
   max-width: 100%;
-  min-height: 100vh;
-  padding-bottom: 70px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: calc(70px + var(--safe-bottom));
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Скроллбар */
+#root::-webkit-scrollbar {
+  display: none;
+}
+
+/* Кнопки — убираем стандартные стили */
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Инпуты */
+input, textarea, select {
+  font-family: inherit;
+}
+
+/* Картинки */
+img {
+  display: block;
+  max-width: 100%;
 }
