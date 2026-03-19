@@ -600,7 +600,7 @@ function ProfileButton() {
 
 export default function Home() {
   return (
-    <div style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
+    <div style={{ position: 'fixed', inset: 0, overflow: 'hidden' }}>
       {/* Фон на весь экран */}
       <CyberGrid />
 
