@@ -7,6 +7,11 @@ function getOrders() {
   catch { return []; }
 }
 
+function getSubscriptions() {
+  try { return JSON.parse(localStorage.getItem('subscriptions') || '[]'); }
+  catch { return []; }
+}
+
 function saveOrders(orders) {
   localStorage.setItem('orders', JSON.stringify(orders));
 }
@@ -51,6 +56,7 @@ function saveSubscription(order, startDate, endDate) {
   } catch {}
 }
 
+// ── Карточка заказа (для вкладки Заказы) ──
 function OrderCard({ order, onStatus }) {
   const [showDateForm, setShowDateForm] = useState(false);
   const today = new Date().toISOString().slice(0, 10);
@@ -93,7 +99,7 @@ function OrderCard({ order, onStatus }) {
         </p>
       </div>
 
-      {/* Поля заказа */}
+      {/* Поля */}
       {order.fields?.length > 0 && (
         <div style={{ padding: '10px 14px', borderBottom: '1px solid #111' }}>
           {order.fields.map((f, i) => (
@@ -212,14 +218,115 @@ function OrderCard({ order, onStatus }) {
   );
 }
 
+// ── Карточка клиента (для вкладки Клиенты) ──
+function ClientCard({ order, sub }) {
+  const [open, setOpen] = useState(false);
+  const subActive = sub && new Date(sub.endDate) >= new Date();
+
+  return (
+    <div style={{
+      background: '#0a0a0a', border: '1px solid #1a3000',
+      marginBottom: '12px', borderRadius: '2px', overflow: 'hidden',
+    }}>
+      {/* Шапка — пользователь */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '12px 14px', background: '#0f0f0f', borderBottom: open ? '1px solid #1a1a1a' : 'none',
+          textAlign: 'left',
+        }}
+      >
+        <div>
+          <p style={{ color: '#fff', fontWeight: '600', fontSize: '14px' }}>
+            {order.userName || 'Гость'}
+            {order.userUsername && <span style={{ color: '#555', fontWeight: 'normal', fontSize: '12px' }}> @{order.userUsername}</span>}
+          </p>
+          <p style={{ color: '#444', fontSize: '10px', marginTop: '2px' }}>
+            {order.title} · #{String(order.id).slice(-6)}
+          </p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {sub && (
+            <span style={{
+              background: subActive ? '#0a1a00' : '#1a1a1a',
+              color: subActive ? '#4caf50' : '#444',
+              border: `1px solid ${subActive ? '#1a3000' : '#2a2a2a'}`,
+              fontSize: '9px', letterSpacing: '0.1em', padding: '3px 8px',
+            }}>
+              {subActive ? 'АКТИВНА' : 'ИСТЕКЛА'}
+            </span>
+          )}
+          <span style={{ color: '#444', fontSize: '16px' }}>{open ? '∧' : '∨'}</span>
+        </div>
+      </button>
+
+      {open && (
+        <div>
+          {/* Контакт */}
+          <div style={{ padding: '10px 14px', borderBottom: '1px solid #111', background: '#080808' }}>
+            <p style={{ color: '#444', fontSize: '9px', letterSpacing: '0.1em', marginBottom: '4px' }}>КОНТАКТ</p>
+            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+              <p style={{ color: '#888', fontSize: '12px' }}>{order.userName || 'Гость'}</p>
+              {order.userUsername && <p style={{ color: '#4fc3f7', fontSize: '12px' }}>@{order.userUsername}</p>}
+              {order.userId && <p style={{ color: '#444', fontSize: '11px' }}>ID: {order.userId}</p>}
+            </div>
+          </div>
+
+          {/* Заказ */}
+          <div style={{ padding: '10px 14px', borderBottom: '1px solid #111' }}>
+            <p style={{ color: '#444', fontSize: '9px', letterSpacing: '0.1em', marginBottom: '6px' }}>ЗАКАЗ</p>
+            <p style={{ color: '#fff', fontSize: '13px', fontWeight: '600', marginBottom: '4px' }}>{order.title}</p>
+            <p style={{ color: '#555', fontSize: '10px', marginBottom: '8px' }}>{formatDate(order.date)} в {formatTime(order.date)}</p>
+            {order.fields?.map((f, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', gap: '12px' }}>
+                <p style={{ color: '#444', fontSize: '11px' }}>{f.label}</p>
+                <p style={{ color: '#888', fontSize: '11px', textAlign: 'right' }}>{f.value}</p>
+              </div>
+            ))}
+            {order.comment && (
+              <div style={{ marginTop: '8px', padding: '8px 10px', background: '#111', borderRadius: '2px' }}>
+                <p style={{ color: '#444', fontSize: '9px', letterSpacing: '0.1em', marginBottom: '3px' }}>КОММЕНТАРИЙ</p>
+                <p style={{ color: '#666', fontSize: '12px', lineHeight: 1.5 }}>{order.comment}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Подписка */}
+          {sub && (
+            <div style={{ padding: '10px 14px' }}>
+              <p style={{ color: '#444', fontSize: '9px', letterSpacing: '0.1em', marginBottom: '6px' }}>ПОДПИСКА</p>
+              <div style={{ display: 'flex', gap: '0' }}>
+                <div style={{ flex: 1 }}>
+                  <p style={{ color: '#444', fontSize: '9px', letterSpacing: '0.1em', marginBottom: '3px' }}>НАЧАЛО</p>
+                  <p style={{ color: '#888', fontSize: '13px' }}>{formatDate(sub.startDate)}</p>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <p style={{ color: '#444', fontSize: '9px', letterSpacing: '0.1em', marginBottom: '3px' }}>ОКОНЧАНИЕ</p>
+                  <p style={{ color: subActive ? '#fff' : '#555', fontSize: '13px' }}>{formatDate(sub.endDate)}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Admin() {
   const [pin, setPin] = useState('');
   const [auth, setAuth] = useState(() => sessionStorage.getItem('admin_auth') === '1');
   const [orders, setOrders] = useState(getOrders);
+  const [subs, setSubs] = useState(getSubscriptions);
   const [error, setError] = useState('');
+  const [tab, setTab] = useState('orders');
 
   useEffect(() => {
-    const sync = () => setOrders(getOrders());
+    const sync = () => {
+      setOrders(getOrders());
+      setSubs(getSubscriptions());
+    };
     window.addEventListener('focus', sync);
     return () => window.removeEventListener('focus', sync);
   }, []);
@@ -239,6 +346,7 @@ export default function Admin() {
     const updated = orders.map(o => o.id === id ? { ...o, status: newStatus } : o);
     setOrders(updated);
     saveOrders(updated);
+    if (newStatus === 'completed') setSubs(getSubscriptions());
   };
 
   // ── PIN экран ──
@@ -285,65 +393,120 @@ export default function Admin() {
   const paidOrders = orders.filter(o => o.status === 'paid');
   const completedOrders = orders.filter(o => o.status === 'completed');
 
+  const TABS = [
+    { id: 'orders',  label: 'Заказы',   count: pendingOrders.length + paidOrders.length },
+    { id: 'clients', label: 'Клиенты',  count: completedOrders.length },
+  ];
+
   return (
-    <div style={{ minHeight: '100vh', background: '#0D0D0D', padding: '20px 16px 40px' }}>
+    <div style={{ minHeight: '100vh', background: '#0D0D0D', paddingBottom: '40px' }}>
       {/* Шапка */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-        <div>
-          <p style={{ color: '#F5E642', fontSize: '9px', letterSpacing: '0.3em', marginBottom: '4px' }}>ADMIN PANEL</p>
-          <h1 style={{ color: '#fff', fontSize: '20px', fontWeight: 'bold' }}>Заказы</h1>
+      <div style={{ padding: '20px 16px 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <div>
+            <p style={{ color: '#F5E642', fontSize: '9px', letterSpacing: '0.3em', marginBottom: '4px' }}>ADMIN PANEL</p>
+            <h1 style={{ color: '#fff', fontSize: '20px', fontWeight: 'bold' }}>Управление</h1>
+          </div>
+          <button
+            onClick={() => { sessionStorage.removeItem('admin_auth'); setAuth(false); }}
+            style={{ color: '#333', fontSize: '11px', border: '1px solid #1e1e1e', padding: '6px 12px' }}
+          >
+            Выйти
+          </button>
         </div>
-        <button
-          onClick={() => { sessionStorage.removeItem('admin_auth'); setAuth(false); }}
-          style={{ color: '#333', fontSize: '11px', border: '1px solid #1e1e1e', padding: '6px 12px' }}
-        >
-          Выйти
-        </button>
+
+        {/* Статистика */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '16px' }}>
+          <div style={{ background: '#111', border: '1px solid #1e1e1e', padding: '10px', borderRadius: '2px', textAlign: 'center' }}>
+            <p style={{ color: '#F5E642', fontWeight: 'bold', fontSize: '20px' }}>{pendingOrders.length}</p>
+            <p style={{ color: '#444', fontSize: '9px', letterSpacing: '0.08em' }}>НОВЫХ</p>
+          </div>
+          <div style={{ background: '#111', border: '1px solid #1e1e1e', padding: '10px', borderRadius: '2px', textAlign: 'center' }}>
+            <p style={{ color: '#4fc3f7', fontWeight: 'bold', fontSize: '20px' }}>{paidOrders.length}</p>
+            <p style={{ color: '#444', fontSize: '9px', letterSpacing: '0.08em' }}>ОПЛАЧЕНО</p>
+          </div>
+          <div style={{ background: '#111', border: '1px solid #1e1e1e', padding: '10px', borderRadius: '2px', textAlign: 'center' }}>
+            <p style={{ color: '#4caf50', fontWeight: 'bold', fontSize: '20px' }}>{completedOrders.length}</p>
+            <p style={{ color: '#444', fontSize: '9px', letterSpacing: '0.08em' }}>КЛИЕНТОВ</p>
+          </div>
+        </div>
+
+        {/* Табы */}
+        <div style={{ display: 'flex', borderBottom: '1px solid #1a1a1a' }}>
+          {TABS.map(t => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              style={{
+                flex: 1, padding: '10px 4px',
+                color: tab === t.id ? '#F5E642' : '#444',
+                fontSize: '12px', fontWeight: tab === t.id ? 'bold' : 'normal',
+                borderBottom: tab === t.id ? '2px solid #F5E642' : '2px solid transparent',
+              }}
+            >
+              {t.label}
+              {t.count > 0 && (
+                <span style={{
+                  marginLeft: '4px',
+                  background: tab === t.id ? '#F5E642' : '#222',
+                  color: tab === t.id ? '#000' : '#555',
+                  fontSize: '9px', padding: '1px 5px', borderRadius: '10px',
+                }}>
+                  {t.count}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Статистика */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '20px' }}>
-        <div style={{ background: '#111', border: '1px solid #1e1e1e', padding: '10px', borderRadius: '2px', textAlign: 'center' }}>
-          <p style={{ color: '#F5E642', fontWeight: 'bold', fontSize: '20px' }}>{pendingOrders.length}</p>
-          <p style={{ color: '#444', fontSize: '9px', letterSpacing: '0.08em' }}>НОВЫХ</p>
-        </div>
-        <div style={{ background: '#111', border: '1px solid #1e1e1e', padding: '10px', borderRadius: '2px', textAlign: 'center' }}>
-          <p style={{ color: '#4fc3f7', fontWeight: 'bold', fontSize: '20px' }}>{paidOrders.length}</p>
-          <p style={{ color: '#444', fontSize: '9px', letterSpacing: '0.08em' }}>ОПЛАЧЕНО</p>
-        </div>
-        <div style={{ background: '#111', border: '1px solid #1e1e1e', padding: '10px', borderRadius: '2px', textAlign: 'center' }}>
-          <p style={{ color: '#4caf50', fontWeight: 'bold', fontSize: '20px' }}>{completedOrders.length}</p>
-          <p style={{ color: '#444', fontSize: '9px', letterSpacing: '0.08em' }}>ГОТОВО</p>
-        </div>
+      <div style={{ padding: '16px' }}>
+
+        {/* ── Вкладка Заказы ── */}
+        {tab === 'orders' && (
+          <div>
+            {pendingOrders.length === 0 && paidOrders.length === 0 ? (
+              <div style={{ textAlign: 'center', paddingTop: '60px' }}>
+                <p style={{ color: '#333', fontSize: '40px', marginBottom: '12px' }}>◈</p>
+                <p style={{ color: '#555' }}>Активных заказов нет</p>
+              </div>
+            ) : (
+              <div>
+                {pendingOrders.length > 0 && (
+                  <div style={{ marginBottom: '24px' }}>
+                    <p style={{ color: '#555', fontSize: '10px', letterSpacing: '0.15em', marginBottom: '10px' }}>В ОБРАБОТКЕ</p>
+                    {pendingOrders.map(o => <OrderCard key={o.id} order={o} onStatus={handleOrderStatus} />)}
+                  </div>
+                )}
+                {paidOrders.length > 0 && (
+                  <div>
+                    <p style={{ color: '#4fc3f7', fontSize: '10px', letterSpacing: '0.15em', marginBottom: '10px' }}>ОЖИДАЕТ ЗАВЕРШЕНИЯ</p>
+                    {paidOrders.map(o => <OrderCard key={o.id} order={o} onStatus={handleOrderStatus} />)}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Вкладка Клиенты ── */}
+        {tab === 'clients' && (
+          <div>
+            {completedOrders.length === 0 ? (
+              <div style={{ textAlign: 'center', paddingTop: '60px' }}>
+                <p style={{ color: '#333', fontSize: '40px', marginBottom: '12px' }}>◎</p>
+                <p style={{ color: '#555' }}>Завершённых заказов нет</p>
+              </div>
+            ) : (
+              completedOrders.map(order => {
+                const sub = subs.find(s => s.orderId === order.id);
+                return <ClientCard key={order.id} order={order} sub={sub} />;
+              })
+            )}
+          </div>
+        )}
+
       </div>
-
-      {orders.length === 0 && (
-        <div style={{ textAlign: 'center', paddingTop: '60px' }}>
-          <p style={{ color: '#333', fontSize: '40px', marginBottom: '12px' }}>◈</p>
-          <p style={{ color: '#555' }}>Заказов пока нет</p>
-        </div>
-      )}
-
-      {pendingOrders.length > 0 && (
-        <div style={{ marginBottom: '24px' }}>
-          <p style={{ color: '#555', fontSize: '10px', letterSpacing: '0.15em', marginBottom: '10px' }}>В ОБРАБОТКЕ</p>
-          {pendingOrders.map(o => <OrderCard key={o.id} order={o} onStatus={handleOrderStatus} />)}
-        </div>
-      )}
-
-      {paidOrders.length > 0 && (
-        <div style={{ marginBottom: '24px' }}>
-          <p style={{ color: '#4fc3f7', fontSize: '10px', letterSpacing: '0.15em', marginBottom: '10px' }}>ОЖИДАЕТ ЗАВЕРШЕНИЯ</p>
-          {paidOrders.map(o => <OrderCard key={o.id} order={o} onStatus={handleOrderStatus} />)}
-        </div>
-      )}
-
-      {completedOrders.length > 0 && (
-        <div>
-          <p style={{ color: '#555', fontSize: '10px', letterSpacing: '0.15em', marginBottom: '10px' }}>ЗАВЕРШЁННЫЕ</p>
-          {completedOrders.map(o => <OrderCard key={o.id} order={o} onStatus={handleOrderStatus} />)}
-        </div>
-      )}
     </div>
   );
 }
