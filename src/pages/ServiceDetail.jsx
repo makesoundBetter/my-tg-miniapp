@@ -26,6 +26,14 @@ export default function ServiceDetail() {
   }
 
   const handleOrder = () => {
+    // Сохраняем в историю запросов
+    try {
+      const history = JSON.parse(localStorage.getItem('service_history') || '[]');
+      if (!history.find(h => h.id === service.id)) {
+        history.unshift({ id: service.id, date: new Date().toISOString() });
+        localStorage.setItem('service_history', JSON.stringify(history));
+      }
+    } catch {}
     const text = encodeURIComponent(`Хочу узнать цену и заказать: ${service.name}`);
     window.open(`https://t.me/Torontocake?text=${text}`, '_blank');
   };

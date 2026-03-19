@@ -7,6 +7,7 @@ import Search from './pages/Search';
 import News from './pages/News';
 import GameReleases from './pages/GameReleases';
 import Favorites from './pages/Favorites';
+import Profile from './pages/Profile';
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/news" element={<News />} />
           <Route path="/games" element={<GameReleases />} />
           <Route path="/favorites" element={<Favorites />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
         <BottomNav />
       </div>

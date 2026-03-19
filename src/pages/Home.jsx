@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 /* ─────────────────── SPLIT-FLAP BOARD ─────────────────── */
 
@@ -574,9 +575,42 @@ function Counters() {
 
 /* ─────────────────── HOME PAGE ─────────────────── */
 
+function ProfileButton() {
+  const navigate = useNavigate();
+  const user = (() => { try { return window.Telegram?.WebApp?.initDataUnsafe?.user || null; } catch { return null; } })();
+
+  return (
+    <button
+      onClick={() => navigate('/profile')}
+      style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+    >
+      {user?.photo_url ? (
+        <img
+          src={user.photo_url}
+          alt=""
+          style={{ width: '32px', height: '32px', borderRadius: '50%', border: '1px solid #2A2A2A', objectFit: 'cover' }}
+        />
+      ) : (
+        <div style={{
+          width: '32px', height: '32px', borderRadius: '50%',
+          background: '#1A1A1A', border: '1px solid #2A2A2A',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: '#F5E642', fontSize: '14px',
+        }}>
+          {user?.first_name?.[0] || '◉'}
+        </div>
+      )}
+      <span style={{ color: '#666', fontSize: '11px', letterSpacing: '0.05em' }}>Мой профиль</span>
+    </button>
+  );
+}
+
 export default function Home() {
   return (
-    <div style={{ padding: '22px 16px' }}>
+    <div style={{ padding: '16px 16px 22px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+        <ProfileButton />
+      </div>
       <CyberGrid />
     </div>
   );
