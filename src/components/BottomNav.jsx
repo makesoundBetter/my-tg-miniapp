@@ -5,7 +5,7 @@ const tabs = [
   { to: '/catalog', icon: '◈', label: 'Услуги' },
   { to: '/search', icon: '⌕', label: 'Поиск' },
   { to: '/news', icon: '◉', label: 'Новости' },
-  { to: '/games', icon: '◎', label: 'Релизы' },
+  { to: '/favorites', icon: '♡', label: 'Избранное' },
 ];
 
 export default function BottomNav() {

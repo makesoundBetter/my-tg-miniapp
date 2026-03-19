@@ -6,6 +6,7 @@ import ServiceDetail from './pages/ServiceDetail';
 import Search from './pages/Search';
 import News from './pages/News';
 import GameReleases from './pages/GameReleases';
+import Favorites from './pages/Favorites';
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/search" element={<Search />} />
           <Route path="/news" element={<News />} />
           <Route path="/games" element={<GameReleases />} />
+          <Route path="/favorites" element={<Favorites />} />
         </Routes>
         <BottomNav />
       </div>

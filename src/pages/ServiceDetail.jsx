@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { services } from '../data/services';
+import { useFavorites } from '../hooks/useFavorites';
 
 function ServiceLogo({ logo, emoji }) {
   const [failed, setFailed] = useState(false);
@@ -13,6 +14,7 @@ function ServiceLogo({ logo, emoji }) {
 export default function ServiceDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { toggle, isFavorite } = useFavorites();
   const service = services.find(s => s.id === Number(id));
 
   if (!service) {
@@ -31,13 +33,22 @@ export default function ServiceDetail() {
   return (
     <div className="min-h-screen" style={{ background: '#0D0D0D' }}>
       <div className="p-4 pt-6">
-        <button
-          onClick={() => navigate(-1)}
-          style={{ color: '#F5E642' }}
-          className="flex items-center gap-2 text-sm mb-8"
-        >
-          ← Назад
-        </button>
+        <div className="flex items-center justify-between mb-8">
+          <button
+            onClick={() => navigate(-1)}
+            style={{ color: '#F5E642' }}
+            className="flex items-center gap-2 text-sm"
+          >
+            ← Назад
+          </button>
+          <button
+            onClick={() => toggle(service.id)}
+            style={{ color: isFavorite(service.id) ? '#F5E642' : '#333', fontSize: '22px', lineHeight: 1 }}
+            className="transition-all active:scale-90"
+          >
+            {isFavorite(service.id) ? '♥' : '♡'}
+          </button>
+        </div>
 
         <div className="mb-8">
           <div className="w-20 h-20 flex items-center justify-center mb-6">
