@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { services, categories } from '../data/services';
 import { countries } from '../data/countries';
@@ -86,6 +86,8 @@ export default function Catalog() {
   const [screen, setScreen] = useState('main');
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [countrySearch, setCountrySearch] = useState('');
+  const [agreed, setAgreed] = useState(false);
+  const [checked, setChecked] = useState(false);
 
   // Moving flow state
   const [destCountry, setDestCountry] = useState(null);       // страна назначения
@@ -96,6 +98,10 @@ export default function Catalog() {
   const [sourcePicker, setSourcePicker] = useState(false);
   const [sourceCurrency, setSourceCurrency] = useState(null); // валюта отдачи
   const [transferMethod, setTransferMethod] = useState(null);
+
+  useEffect(() => {
+    if (localStorage.getItem('moving_agreed') === '1') setAgreed(true);
+  }, []);
 
   const filtered = selectedCategory ? services.filter(s => s.category === selectedCategory) : [];
   const selectedCat = categories.find(c => c.id === selectedCategory);
@@ -122,7 +128,17 @@ export default function Catalog() {
         </div>
         <div className="px-4 space-y-3">
           {mainSections.map(s => (
-            <BigButton key={s.id} label={s.label} onClick={() => setScreen(s.id)} />
+            <BigButton
+              key={s.id}
+              label={s.label}
+              onClick={() => {
+                if (s.id === 'moving' && !agreed) {
+                  setScreen('moving-intro');
+                } else {
+                  setScreen(s.id);
+                }
+              }}
+            />
           ))}
         </div>
       </div>
@@ -173,6 +189,123 @@ export default function Catalog() {
               </div>
             </button>
           ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Перестановки — инструкция (только первый раз)
+  if (screen === 'moving-intro') {
+    return (
+      <div className="pb-28">
+        <BackButton onClick={() => setScreen('main')} title="Перестановки" />
+
+        <div className="px-4">
+          {/* Заголовок */}
+          <div style={{ marginBottom: '20px' }}>
+            <p style={{ color: '#F5E642', fontSize: '11px', letterSpacing: '0.2em', marginBottom: '6px' }}>
+              КАК ЭТО РАБОТАЕТ
+            </p>
+            <h2 className="text-white font-bold text-lg">Инструкция по сервису</h2>
+          </div>
+
+          {/* Шаги */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+            {[
+              {
+                n: '01',
+                title: 'Заполните заявку',
+                text: 'Укажите страну назначения, сумму, валюту получения, страну и валюту отдачи, а также способ передачи средств.',
+              },
+              {
+                n: '02',
+                title: 'Отправьте запрос',
+                text: 'Нажмите «Узнать условия» — ваша заявка уйдёт оператору в Telegram.',
+              },
+              {
+                n: '03',
+                title: 'Получите курс',
+                text: 'Оператор свяжется с вами и озвучит актуальный курс обмена и итоговую сумму к получению.',
+              },
+              {
+                n: '04',
+                title: 'Подтвердите сделку',
+                text: 'Если условия устраивают — подтвердите. Вам сообщат реквизиты для передачи средств.',
+              },
+              {
+                n: '05',
+                title: 'Передайте средства',
+                text: 'Переведите сумму онлайн или встретьтесь лично, в зависимости от выбранного способа.',
+              },
+              {
+                n: '06',
+                title: 'Получение',
+                text: 'После подтверждения получения средств нашей стороной — получатель в стране назначения получает деньги.',
+              },
+            ].map((step, i, arr) => (
+              <div key={step.n} style={{ display: 'flex', gap: '14px' }}>
+                {/* Линия и номер */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '28px', flexShrink: 0 }}>
+                  <div style={{
+                    width: '28px', height: '28px', borderRadius: '50%',
+                    background: '#1a1500', border: '1px solid #F5E642',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: '#F5E642', fontSize: '9px', fontWeight: 'bold', letterSpacing: '0.05em',
+                    flexShrink: 0,
+                  }}>
+                    {step.n}
+                  </div>
+                  {i < arr.length - 1 && (
+                    <div style={{ width: '1px', flex: 1, background: '#2a2a2a', minHeight: '20px', margin: '4px 0' }} />
+                  )}
+                </div>
+                {/* Текст */}
+                <div style={{ paddingBottom: i < arr.length - 1 ? '16px' : '0' }}>
+                  <p className="text-white font-semibold text-sm">{step.title}</p>
+                  <p style={{ color: '#666', fontSize: '12px', marginTop: '3px', lineHeight: '1.5' }}>{step.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Фиксированная кнопка с чекбоксом */}
+        <div className="fixed bottom-[70px] left-0 right-0 p-4" style={{ background: '#0D0D0D', borderTop: '1px solid #1a1a1a' }}>
+          <button
+            onClick={() => setChecked(c => !c)}
+            className="flex items-center gap-3 mb-3 w-full text-left"
+          >
+            <div style={{
+              width: '18px', height: '18px', border: '1px solid #2A2A2A',
+              background: checked ? '#F5E642' : '#111',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0, borderRadius: '2px', transition: 'all 0.15s',
+            }}>
+              {checked && <span style={{ color: '#000', fontSize: '12px', fontWeight: 'bold', lineHeight: 1 }}>✓</span>}
+            </div>
+            <span style={{ color: '#888', fontSize: '12px' }}>
+              Я ознакомился с инструкцией и принимаю условия сервиса
+            </span>
+          </button>
+          <button
+            disabled={!checked}
+            onClick={() => {
+              localStorage.setItem('moving_agreed', '1');
+              setAgreed(true);
+              setScreen('moving');
+            }}
+            style={{
+              background: checked ? '#F5E642' : '#1a1a1a',
+              color: checked ? '#000' : '#444',
+              border: '1px solid #2A2A2A',
+              width: '100%', padding: '14px',
+              fontWeight: 'bold', fontSize: '13px',
+              letterSpacing: '0.1em', textTransform: 'uppercase',
+              transition: 'all 0.2s',
+            }}
+          >
+            Продолжить →
+          </button>
         </div>
       </div>
     );
